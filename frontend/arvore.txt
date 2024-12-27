@@ -1,0 +1,36 @@
+.
+├── arvore.txt
+├── eslint.config.js
+├── index.html
+├── node_modules
+│   ├──
+├── package.json
+├── package-lock.json
+├── postcss.config.js
+├── public
+│   └── vite.svg
+├── README.md
+├── src
+│   ├── App.css
+│   ├── App.jsx
+│   ├── assets
+│   │   └── react.svg
+│   ├── components
+│   │   ├── Header.jsx
+│   │   └── Sidebar.jsx
+│   ├── hooks
+│   ├── index.css
+│   ├── main.jsx
+│   ├── pages
+│   │   ├── Indicadores.jsx
+│   │   └── ReportarFalha.jsx
+│   ├── services
+│   │   └── mockService.js
+│   ├── store
+│   │   ├── inconsistenciasSlice.js
+│   │   └── index.js
+│   └── styles
+├── tailwind.config.js
+└── vite.config.js
+
+2298 directories, 46492 files

@@ -1,0 +1,81 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+.pnpm-debug.log*
+
+# Relatórios de diagnóstico
+report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
+
+# Dados de runtime
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# Diretórios de cobertura de testes
+coverage
+*.lcov
+
+# Diretórios de dependências
+node_modules/
+jspm_packages/
+web_modules/
+
+# Cache do TypeScript
+*.tsbuildinfo
+
+# Cache opcional do npm
+.npm
+
+# Cache opcional do eslint
+.eslintcache
+
+# Cache opcional do stylelint
+.stylelintcache
+
+# Histórico opcional do REPL
+.node_repl_history
+
+# Saída do 'npm pack'
+*.tgz
+
+# Arquivos de variáveis de ambiente
+.env
+.env.development.local
+.env.test.local
+.env.production.local
+.env.local
+
+# Saída de builds
+dist/
+build/
+out/
+.nuxt/
+.next/
+.svelte-kit/
+.vuepress/dist
+.cache/
+.parcel-cache
+.docusaurus/
+.serverless/
+.fusebox/
+.dynamodb/
+.tern-port
+.vscode-test/
+.yarn/cache
+.yarn/unplugged
+.yarn/build-state.yml
+.yarn/install-state.gz
+.pnp.*
+
+# Arquivos de configuração do sistema operacional
+.DS_Store
+Thumbs.db
+
+# Arquivos temporários
+*.swp
+*~
