@@ -1,12 +1,17 @@
-// src/store/profissionaisSlice.js
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import api from '../services/api';
+/**
+ * Slice responsável por gerenciar a lista de profissionais (responsibles) no Redux.
+ * Usa createAsyncThunk para buscar dados do backend.
+ */
 
-// Thunks
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import axios from 'axios';
+
+// Thunk assíncrono para buscar a lista de responsáveis via GET /api/responsibles
 export const fetchProfissionais = createAsyncThunk(
   'profissionais/fetchProfissionais',
   async () => {
-    const response = await api.get('/responsibles'); // GET /api/responsibles
+    // Ajuste a baseURL no axios conforme seu setup (pode ser 'http://localhost:5000/api')
+    const response = await axios.get('/api/responsibles');
     return response.data;
   }
 );
@@ -14,8 +19,8 @@ export const fetchProfissionais = createAsyncThunk(
 const profissionaisSlice = createSlice({
   name: 'profissionais',
   initialState: {
-    list: [],
-    status: 'idle',
+    list: [],      // Armazena a lista de profissionais
+    status: 'idle',// 'idle' | 'loading' | 'succeeded' | 'failed'
     error: null,
   },
   reducers: {},
@@ -26,7 +31,7 @@ const profissionaisSlice = createSlice({
       })
       .addCase(fetchProfissionais.fulfilled, (state, action) => {
         state.status = 'succeeded';
-        state.list = action.payload;
+        state.list = action.payload; // Recebe a lista do backend
       })
       .addCase(fetchProfissionais.rejected, (state, action) => {
         state.status = 'failed';

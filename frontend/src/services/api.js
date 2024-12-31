@@ -1,8 +1,8 @@
-// src/services/api.js
+// filepath: /root/ERP/frontend/src/services/api.js
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: 'http://localhost:5000/api', // URL do backend
+  baseURL: 'http://localhost:5000/api', // Certifique-se de que o backend está rodando nesta URL e porta
 });
 
 // Interceptors para incluir tokens, se necessário

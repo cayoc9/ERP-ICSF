@@ -1,21 +1,25 @@
-// routes/responsibles.js
+/**
+ * Rotas para gerenciar 'Responsibles' (Profissionais responsáveis).
+ * Disponibiliza endpoints para listar, criar, atualizar e deletar registros.
+ */
+
 const express = require('express');
 const router = express.Router();
-const responsibleController = require('../controllers/ResponsibleController.js');
+const ResponsibleController = require('../controllers/ResponsibleController.js');
 
-// Rota para obter todos os responsibles
-router.get('/', responsibleController.getAllResponsibles);
+// GET /api/responsibles - Lista todos os profissionais
+router.get('/', ResponsibleController.getAllResponsibles);
 
-// Rota para obter um responsible por ID
-router.get('/:id', responsibleController.getResponsibleById);
+// GET /api/responsibles/:id - Detalhes de um profissional específico
+router.get('/:id', ResponsibleController.getResponsibleById);
 
-// Rota para criar um novo responsible
-router.post('/', responsibleController.createResponsible);
+// POST /api/responsibles - Cria um novo profissional
+router.post('/', ResponsibleController.createResponsible);
 
-// Rota para atualizar um responsible existente
-router.put('/:id', responsibleController.updateResponsible);
+// PUT /api/responsibles/:id - Atualiza dados de um profissional
+router.put('/:id', ResponsibleController.updateResponsible);
 
-// Rota para deletar um responsible
-router.delete('/:id', responsibleController.deleteResponsible);
+// DELETE /api/responsibles/:id - Remove um profissional
+router.delete('/:id', ResponsibleController.deleteResponsible);
 
 module.exports = router;

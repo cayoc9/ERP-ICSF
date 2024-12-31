@@ -1,4 +1,6 @@
-// src/store/hospitalGroupsSlice.js
+/**
+ * Gerencia as ações de fetch, adição e remoção de Grupos Hospitalares.
+ */
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import api from '../services/api';
 

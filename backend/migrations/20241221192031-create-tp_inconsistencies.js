@@ -1,6 +1,10 @@
 'use strict';
 
-/** @type {import('sequelize-cli').Migration} */
+/**
+ * Migration que cria a tabela 'TP_Inconsistencies'.
+ * Obs.: a property 'type' (Sequelize.STRING(255)) e 'description' (Sequelize.TEXT) podem ter divergido
+ * do que está no Model. Ajuste de acordo com a necessidade real.
+ */
 
 module.exports = {
   up: async (queryInterface, Sequelize) => {
@@ -11,6 +15,7 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER
       },
+      // 'type' pode ser renomeado para 'description' se for coerente com o Model
       type: {
         type: Sequelize.STRING(255),
         allowNull: false

@@ -1,4 +1,6 @@
-// src/store/setoresSlice.js
+/**
+ * Slice responsável por gerenciar os setores (fetch/estado) no Redux.
+ */
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import api from '../services/api';
 

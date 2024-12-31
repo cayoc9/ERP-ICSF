@@ -1,28 +1,50 @@
-// src/store/inconsistenciasSlice.js
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import api from '../services/api';
+/**
+ * Slice para inconsistências de prontuário (TPInconsistencies).
+ * - fetchInconsistencias() carrega dados via GET /tp-inconsistencies
+ * - addInconsistencia() chama POST /tp-inconsistencies
+ * - updateInconsistencia() chama PUT /tp-inconsistencies/:id
+ * - removeInconsistencia() deleta /tp-inconsistencies/:id
+ */
 
-// Thunks para operações assíncronas
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import api from '../services/api'; // axios configurado com baseURL
+
+// Carrega a lista de TPInconsistencies do backend
 export const fetchInconsistencias = createAsyncThunk(
   'inconsistencias/fetchInconsistencias',
   async () => {
-    const response = await api.get('/inconsistencias'); // GET /api/inconsistencias
+    // GET /api/tp-inconsistencies
+    const response = await api.get('/tp-inconsistencies');
     return response.data;
   }
 );
 
+// Cria (POST) uma "inconsistência"
 export const addInconsistencia = createAsyncThunk(
   'inconsistencias/addInconsistencia',
   async (novaInconsistencia) => {
-    const response = await api.post('/inconsistencias', novaInconsistencia); // POST /api/inconsistencias
+    // POST /api/tp-inconsistencies
+    const response = await api.post('/tp-inconsistencies', novaInconsistencia);
     return response.data;
   }
 );
 
+// Atualiza (PUT) uma "inconsistência"
+export const updateInconsistencia = createAsyncThunk(
+  'inconsistencias/updateInconsistencia',
+  async ({ id, data }) => {
+    // PUT /api/tp-inconsistencies/:id
+    const response = await api.put(`/tp-inconsistencies/${id}`, data);
+    return response.data;
+  }
+);
+
+// Remove (DELETE) uma "inconsistência"
 export const removeInconsistencia = createAsyncThunk(
   'inconsistencias/removeInconsistencia',
   async (id) => {
-    await api.delete(`/inconsistencias/${id}`); // DELETE /api/inconsistencias/:id
+    // DELETE /api/tp-inconsistencies/:id
+    await api.delete(`/tp-inconsistencies/${id}`);
     return id;
   }
 );
@@ -37,7 +59,7 @@ const inconsistenciasSlice = createSlice({
   reducers: {},
   extraReducers: (builder) => {
     builder
-      // Fetch Inconsistencias
+      // Carregar Inconsistências
       .addCase(fetchInconsistencias.pending, (state) => {
         state.status = 'loading';
       })
@@ -49,11 +71,21 @@ const inconsistenciasSlice = createSlice({
         state.status = 'failed';
         state.error = action.error.message;
       })
-      // Add Inconsistencia
+
+      // Adicionar Inconsistência
       .addCase(addInconsistencia.fulfilled, (state, action) => {
         state.list.push(action.payload);
       })
-      // Remove Inconsistencia
+
+      // Atualizar Inconsistência
+      .addCase(updateInconsistencia.fulfilled, (state, action) => {
+        const index = state.list.findIndex((inc) => inc.id === action.payload.id);
+        if (index !== -1) {
+          state.list[index] = action.payload;
+        }
+      })
+
+      // Remover Inconsistência
       .addCase(removeInconsistencia.fulfilled, (state, action) => {
         state.list = state.list.filter((inc) => inc.id !== action.payload);
       });

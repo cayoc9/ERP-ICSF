@@ -1,4 +1,7 @@
-// models/TP_Inconsistencies.js
+/**
+ * Model que representa os tipos de inconsistências (TPInconsistencies).
+ * Armazena 'description', 'status' (se está ativo/inativo) e campos de tracking.
+ */
 const { DataTypes } = require('sequelize');
 const sequelize = require('../config/database');
 
@@ -9,7 +12,7 @@ const TPInconsistencies = sequelize.define('TPInconsistencies', {
     autoIncrement: true,
   },
   description: {
-    type: DataTypes.STRING,
+    type: DataTypes.STRING, // Ou TEXT se preferir
     allowNull: false,
   },
   status: {
@@ -36,7 +39,7 @@ const TPInconsistencies = sequelize.define('TPInconsistencies', {
   },
 }, {
   tableName: 'tp_inconsistencies',
-  timestamps: false,
+  timestamps: false, // Caso não use createdAt/updatedAt automáticos
 });
 
 module.exports = TPInconsistencies;

@@ -1,11 +1,15 @@
-// controllers/ResponsibleController.js
+// controllers/ResponsibleController
 const { Responsible, Failure } = require('../models');
 
 // Obter todos os responsibles
 exports.getAllResponsibles = async (req, res) => {
   try {
     const responsibles = await Responsible.findAll({
-      include: [{ model: Failure, as: 'failures' }],
+      include: [{
+        model: Failure,
+        as: 'failures',
+        attributes: ['id', 'prontuarioCode', 'formularioId', 'formularioDate', 'professionalId', 'hospitalId', 'sectorId', 'status', 'observacoes', 'createDate', 'createUser', 'updateDate', 'updateUser']
+      }]
     });
     res.status(200).json(responsibles);
   } catch (error) {

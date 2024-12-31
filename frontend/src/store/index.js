@@ -1,4 +1,6 @@
-// src/store/index.js
+/**
+ * Configura a store principal do Redux com vários reducers.
+ */
 import { configureStore } from '@reduxjs/toolkit';
 import inconsistenciasReducer from './inconsistenciasSlice';
 import formulariosReducer from './formulariosSlice';

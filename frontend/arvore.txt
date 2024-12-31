@@ -3,7 +3,7 @@
 ├── eslint.config.js
 ├── index.html
 ├── node_modules
-│   ├──
+│   ├── 
 ├── package.json
 ├── package-lock.json
 ├── postcss.config.js
@@ -22,15 +22,21 @@
 │   ├── index.css
 │   ├── main.jsx
 │   ├── pages
+│   │   ├── HospitalGroups.jsx
 │   │   ├── Indicadores.jsx
 │   │   └── ReportarFalha.jsx
 │   ├── services
+│   │   ├── api.js
 │   │   └── mockService.js
 │   ├── store
+│   │   ├── formulariosSlice.js
+│   │   ├── hospitalGroupsSlice.js
 │   │   ├── inconsistenciasSlice.js
-│   │   └── index.js
+│   │   ├── index.js
+│   │   ├── profissionaisSlice.js
+│   │   └── setoresSlice.js
 │   └── styles
 ├── tailwind.config.js
 └── vite.config.js
 
-2298 directories, 46492 files
+2298 directories, 46498 files

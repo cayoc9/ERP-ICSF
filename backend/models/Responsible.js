@@ -1,36 +1,30 @@
-// models/Responsible.js
-const { DataTypes } = require('sequelize');
+const { Model, DataTypes } = require('sequelize');
 const sequelize = require('../config/database');
 
-const Responsible = sequelize.define('Responsible', {
+class Responsible extends Model {}
+
+Responsible.init({
   id: {
-    type: DataTypes.INTEGER, // CD_USUARIO
+    type: DataTypes.INTEGER,
     primaryKey: true,
-    autoIncrement: true, // Se `CD_USUARIO` é auto-increment
+    autoIncrement: true,
   },
-  name: { // DS_USUARIO
-    type: DataTypes.STRING(30),
+  name: {
+    type: DataTypes.STRING,
     allowNull: false,
   },
-  createDate: { // CREATE_DATE
+  createDate: {
     type: DataTypes.DATE,
-    allowNull: true,
     defaultValue: DataTypes.NOW,
   },
-  createUser: { // CREATE_USER
-    type: DataTypes.INTEGER,
-    allowNull: true,
-  },
-  updateDate: { // UPDATE_DATE
+  updateDate: {
     type: DataTypes.DATE,
-    allowNull: true,
-  },
-  updateUser: { // UPDATE_USER
-    type: DataTypes.INTEGER,
-    allowNull: true,
+    defaultValue: DataTypes.NOW,
   },
 }, {
-  tableName: 'responsibles', // `usuario_profissional`
+  sequelize,
+  modelName: 'Responsible',
+  tableName: 'responsibles',
   timestamps: false,
 });
 

@@ -1,4 +1,7 @@
-// src/App.jsx
+/**
+ * Componente principal que define a estrutura básica:
+ * Header fixo, Sidebar e conteúdo das rotas.
+ */
 import React from 'react';
 import { Routes, Route } from 'react-router-dom';
 import Header from './components/Header';

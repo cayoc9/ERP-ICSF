@@ -1,15 +1,16 @@
-/* index.css ou main.css */
+/* Arquivo responsável por estilizações globais usando Tailwind e regras de reset. */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
+/* Responsável por ajustar dimensões e remover margens e paddings em html, body e #root. */
 html, body, #root {
   height: 100%;
   margin: 0;
   padding: 0;
 }
 
-
+/* Estilizações adicionais para links, botões e elementos de texto. */
 a {
   font-weight: 500;
   color: #646cff;
@@ -22,7 +23,6 @@ a:hover {
 body {
   margin: 0;
 }
-
 
 h1 {
   font-size: 3.2em;
@@ -48,6 +48,7 @@ button:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
 }
 
+/* Estilizações para modo claro */
 @media (prefers-color-scheme: light) {
   :root {
     color: #213547;

@@ -1,21 +1,26 @@
-// routes/tp-inconsistencies.js
+/**
+ * Rotas para gerenciar 'TPInconsistencies' (tipos de inconsistências).
+ * Endpoints para listar, criar, atualizar e deletar.
+ * Exemplo: /api/tp-inconsistencies
+ */
+
 const express = require('express');
 const router = express.Router();
 const tpInconsistenciesController = require('../controllers/TPInconsistenciesController');
 
-// Rota para obter todas as TP Inconsistencies
+// GET /api/tp-inconsistencies - Lista todas as inconsistências
 router.get('/', tpInconsistenciesController.getAllTPInconsistencies);
 
-// Rota para obter uma TP Inconsistency por ID
+// GET /api/tp-inconsistencies/:id - Detalhes de uma inconsistência
 router.get('/:id', tpInconsistenciesController.getTPInconsistencyById);
 
-// Rota para criar uma nova TP Inconsistency
+// POST /api/tp-inconsistencies - Cria uma inconsistência
 router.post('/', tpInconsistenciesController.createTPInconsistency);
 
-// Rota para atualizar uma TP Inconsistency existente
+// PUT /api/tp-inconsistencies/:id - Atualiza uma inconsistência
 router.put('/:id', tpInconsistenciesController.updateTPInconsistency);
 
-// Rota para deletar uma TP Inconsistency
+// DELETE /api/tp-inconsistencies/:id - Remove uma inconsistência
 router.delete('/:id', tpInconsistenciesController.deleteTPInconsistency);
 
 module.exports = router;

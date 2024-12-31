@@ -9,67 +9,39 @@ const Failure = sequelize.define('Failure', {
     autoIncrement: true,
   },
   prontuarioCode: {
-    type: DataTypes.INTEGER,
+    type: DataTypes.STRING,
     allowNull: false,
-    unique: true,
   },
   formularioId: {
     type: DataTypes.INTEGER,
     allowNull: false,
-    references: {
-      model: 'forms',
-      key: 'id',
-    },
   },
   formularioDate: {
     type: DataTypes.DATE,
-    allowNull: true,
-    defaultValue: DataTypes.NOW,
+    allowNull: false,
   },
   professionalId: {
     type: DataTypes.INTEGER,
     allowNull: false,
-    references: {
-      model: 'responsibles',
-      key: 'id',
-    },
   },
   hospitalId: {
     type: DataTypes.INTEGER,
     allowNull: false,
-    references: {
-      model: 'hospitals',
-      key: 'id',
-    },
   },
   sectorId: {
     type: DataTypes.INTEGER,
     allowNull: false,
-    references: {
-      model: 'sectors',
-      key: 'id',
-    },
   },
   status: {
     type: DataTypes.STRING,
     allowNull: false,
-    defaultValue: 'Aberto',
   },
-  observacoes: {
-    type: DataTypes.TEXT,
+  observacoes: { // Adicionando a coluna observacoes
+    type: DataTypes.STRING,
     allowNull: true,
-  },
-  createDate: {
-    type: DataTypes.DATE,
-    allowNull: true,
-    defaultValue: DataTypes.NOW,
   },
   createUser: {
     type: DataTypes.INTEGER,
-    allowNull: true,
-  },
-  updateDate: {
-    type: DataTypes.DATE,
     allowNull: true,
   },
   updateUser: {

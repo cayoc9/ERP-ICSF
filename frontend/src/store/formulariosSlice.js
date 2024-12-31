@@ -1,4 +1,7 @@
-// src/store/formulariosSlice.js
+/**
+ * Lida com formulários, permitindo fetch e criação
+ * incluindo falhas relacionadas ao formulário.
+ */
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import api from '../services/api';
 

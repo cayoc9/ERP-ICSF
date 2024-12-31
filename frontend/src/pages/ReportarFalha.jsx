@@ -1,53 +1,109 @@
-// src/pages/ReportarFalha.jsx
+/**
+ * Componente "ReportarFalha" - Página responsável por registrar falhas/inconsistências
+ * em um prontuário hospitalar, vinculando-as a um formulário e a um profissional.
+ * 
+ * Fluxo principal:
+ *  1. Carrega dados (profissionais, formulários, inconsistências, setores) via Redux Thunks.
+ *  2. Exibe dropdowns e campos de texto para o usuário preencher.
+ *  3. Permite adicionar/remover inconsistências em uma lista local.
+ *  4. Envia (dispara ação "createFormWithFailures") os dados consolidados para backend,
+ *     criando um novo registro de formulário e suas falhas associadas.
+ */
+
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { createFormWithFailures } from '../store/formulariosSlice'; // Importar a ação correta
+
+// Ações importadas de diferentes slices do Redux
+import { createFormWithFailures } from '../store/formulariosSlice'; 
 import { fetchProfissionais } from '../store/profissionaisSlice';
 import { fetchFormularios } from '../store/formulariosSlice';
 import { fetchInconsistencias } from '../store/inconsistenciasSlice';
-import { fetchSectors } from '../store/setoresSlice'; // Supondo que há um slice para setores
+import { fetchSectors } from '../store/setoresSlice'; 
 
 function ReportarFalha() {
   const dispatch = useDispatch();
 
-  // Estados locais
+  // -------------------------------------------
+  // Estados locais do componente
+  // -------------------------------------------
+
+  // Armazena o ID do profissional selecionado
   const [selectedProfissional, setSelectedProfissional] = useState('');
+
+  // Campo para inserir manualmente o código do prontuário
   const [cdProntuario, setCdProntuario] = useState('');
+
+  // Tipo de formulário (ou tipo de documento) selecionado
   const [selectedFormulario, setSelectedFormulario] = useState('');
+
+  // "Inconsistência selecionada" - usada antes de adicionarmos ao array
   const [selectedInconsistencia, setSelectedInconsistencia] = useState('');
+
+  // Lista de inconsistências adicionadas (array de IDs)
   const [listaInconsistencias, setListaInconsistencias] = useState([]);
+
+  // Setor selecionado para associar à falha
   const [selectedSetor, setSelectedSetor] = useState('');
+
+  // Observações adicionais inseridas pelo usuário
   const [observacoes, setObservacoes] = useState('');
+
+  // Controle de estado de carregamento (para desabilitar botão/enviar spinner)
   const [loading, setLoading] = useState(false);
+
+  // Armazenar mensagem de erro, se ocorrer
   const [error, setError] = useState(null);
 
-  // Dados do Redux
+  // -------------------------------------------
+  // Acessando dados do Redux
+  // -------------------------------------------
+  // Slices diferentes que contêm listas de dados (profissionais, formulários, etc.)
   const profissionais = useSelector((state) => state.profissionais.list);
   const formularios = useSelector((state) => state.formularios.list);
   const inconsistenciasDisponiveis = useSelector((state) => state.inconsistencias.list);
   const setores = useSelector((state) => state.setores.list);
 
-  // Fetch dados ao montar o componente
+  // -------------------------------------------
+  // Efeito para carregar dados iniciais
+  // -------------------------------------------
+  // Assim que o componente monta, chamamos as thunks para popular Redux com dados
   useEffect(() => {
-    dispatch(fetchProfissionais());
-    dispatch(fetchFormularios());
-    dispatch(fetchInconsistencias());
-    dispatch(fetchSectors());
+    dispatch(fetchProfissionais());    // Carrega profissionais (responsáveis)
+    dispatch(fetchFormularios());      // Carrega tipos de formulários
+    dispatch(fetchInconsistencias());  // Carrega tipos de inconsistências
+    dispatch(fetchSectors());          // Carrega setores
   }, [dispatch]);
 
+  /**
+   * handleAddInconsistencia
+   * Adiciona a inconsistência selecionada ao array 'listaInconsistencias', 
+   * desde que ela não esteja duplicada.
+   */
   const handleAddInconsistencia = () => {
+    // Só adiciona se estiver selecionado e não estiver repetido
     if (selectedInconsistencia && !listaInconsistencias.includes(selectedInconsistencia)) {
       setListaInconsistencias([...listaInconsistencias, selectedInconsistencia]);
-      setSelectedInconsistencia('');
+      setSelectedInconsistencia(''); // Reseta o campo de inconsistência
     }
   };
 
+  /**
+   * handleRemoveInconsistencia
+   * Remove uma inconsistência específica do array local.
+   * @param {number} id - ID da inconsistência a remover
+   */
   const handleRemoveInconsistencia = (id) => {
     setListaInconsistencias(listaInconsistencias.filter((inc) => inc !== id));
   };
 
+  /**
+   * handleSubmit
+   * Principal função de envio do formulário. Faz validações mínimas,
+   * compõe o objeto (formData) no formato que a API espera e 
+   * chama a ação Redux que criará o Form + Falhas no backend.
+   */
   const handleSubmit = async () => {
-    // Validação dos campos obrigatórios
+    // Verifica se todos os campos obrigatórios foram preenchidos
     if (
       !selectedProfissional ||
       !cdProntuario ||
@@ -62,10 +118,12 @@ function ReportarFalha() {
     setLoading(true);
     setError(null);
 
-    // Estrutura de dados conforme a API espera
+    // Monta o objeto que enviamos para o backend
+    // "formData" inclui um array "failures" com 1 falha,
+    // mas poderia ter várias se a lógica do sistema permitir.
     const formData = {
-      description: 'Relatório de Falha', // Pode ser dinâmico conforme necessário
-      createUser: selectedProfissional,
+      description: 'Relatório de Falha', // Pode ser dinâmico, se necessário
+      createUser: selectedProfissional,   // Usuário que criou este form
       failures: [
         {
           prontuarioCode: cdProntuario,
@@ -81,16 +139,22 @@ function ReportarFalha() {
     };
 
     try {
+      // Dispara a action Redux que enviará POST para criar Form + Falhas
       await dispatch(createFormWithFailures(formData)).unwrap();
+
+      // Se chegou até aqui sem erro, sinaliza sucesso ao usuário
       alert('Formulário e inconsistências reportadas com sucesso!');
-      // Resetar o formulário
+
+      // Reseta todos os campos do formulário
       setSelectedProfissional('');
       setCdProntuario('');
       setSelectedFormulario('');
       setListaInconsistencias([]);
       setSelectedSetor('');
       setObservacoes('');
+
     } catch (err) {
+      // Caso haja erro, logs no console e salvamos mensagem de erro no estado
       console.error('Erro ao reportar inconsistência:', err);
       setError('Erro ao reportar inconsistência.');
     } finally {
@@ -98,11 +162,17 @@ function ReportarFalha() {
     }
   };
 
+  // -------------------------------------------
+  // Renderização do JSX
+  // -------------------------------------------
   return (
     <div className="p-4">
       <h1 className="text-xl mb-4">Reportar Falha</h1>
+
+      {/* Caso haja erro, mostra um parágrafo em vermelho */}
       {error && <p className="text-red-500 mb-2">{error}</p>}
 
+      {/* Seção do Responsável (Profissional) */}
       <div className="mb-2">
         <label htmlFor="responsavel" className="block">Responsável:</label>
         <select
@@ -112,6 +182,7 @@ function ReportarFalha() {
           className="ml-2 p-1 border rounded w-full"
         >
           <option value="">Selecione</option>
+          {/* Lista os profissionais vindos do Redux */}
           {profissionais.map((p) => (
             <option key={p.id} value={p.id}>
               {p.name}
@@ -120,6 +191,7 @@ function ReportarFalha() {
         </select>
       </div>
 
+      {/* Seção do Código do Prontuário */}
       <div className="mb-2">
         <label htmlFor="prontuario" className="block">Código do Prontuário:</label>
         <input
@@ -132,6 +204,7 @@ function ReportarFalha() {
         />
       </div>
 
+      {/* Seção do Tipo de Documento (Formulário) */}
       <div className="mb-2">
         <label htmlFor="formulario" className="block">Tipo de Documento:</label>
         <select
@@ -149,6 +222,7 @@ function ReportarFalha() {
         </select>
       </div>
 
+      {/* Seção das Inconsistências: Adicionar / Remover */}
       <div className="mb-2">
         <label htmlFor="inconsistencia" className="block">Inconsistências:</label>
         <div className="flex items-center gap-2">
@@ -165,6 +239,8 @@ function ReportarFalha() {
               </option>
             ))}
           </select>
+
+          {/* Botão para adicionar a inconsistência selecionada ao array local */}
           <button
             onClick={handleAddInconsistencia}
             className="bg-green-500 text-white px-4 py-2 rounded"
@@ -173,12 +249,17 @@ function ReportarFalha() {
             Adicionar
           </button>
         </div>
+
+        {/* Lista das inconsistências adicionadas */}
         <ul className="mt-2 list-disc list-inside">
           {listaInconsistencias.map((inc, idx) => {
+            // Busca o objeto de inconsistência completo para exibir o 'description'
             const inconsistencia = inconsistenciasDisponiveis.find((i) => i.id === inc);
             return (
               <li key={idx} className="flex items-center justify-between">
-                <span>{inconsistencia ? inconsistencia.description : 'Inconsistência não encontrada'}</span>
+                <span>
+                  {inconsistencia ? inconsistencia.description : 'Inconsistência não encontrada'}
+                </span>
                 <button
                   onClick={() => handleRemoveInconsistencia(inc)}
                   className="text-red-500 hover:text-red-700"
@@ -191,6 +272,7 @@ function ReportarFalha() {
         </ul>
       </div>
 
+      {/* Seção do Setor Responsável */}
       <div className="mb-2">
         <label htmlFor="setor" className="block">Setor Responsável:</label>
         <select
@@ -208,6 +290,7 @@ function ReportarFalha() {
         </select>
       </div>
 
+      {/* Seção de Observações Adicionais */}
       <div className="mb-2">
         <label htmlFor="observacoes" className="block">Observações:</label>
         <textarea
@@ -220,6 +303,7 @@ function ReportarFalha() {
         />
       </div>
 
+      {/* Botão de Envio */}
       <button
         onClick={handleSubmit}
         className="bg-blue-500 text-white px-4 py-2 rounded w-full"

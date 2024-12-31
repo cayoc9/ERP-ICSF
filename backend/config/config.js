@@ -19,10 +19,10 @@ module.exports = {
     port: process.env.DB_PORT_TEST || 5432,
   },
   production: {
-    username: process.env.DB_USER_PROD,
-    password: process.env.DB_PASSWORD_PROD,
-    database: process.env.DB_NAME_PROD,
-    host: process.env.DB_HOST_PROD,
+    username: process.env.DB_USER_PROD || 'default_user',
+    password: process.env.DB_PASSWORD_PROD || 'default_password',
+    database: process.env.DB_NAME_PROD || 'default_db',
+    host: process.env.DB_HOST_PROD || 'localhost',
     dialect: 'postgres',
     port: process.env.DB_PORT_PROD || 5432, // Corrigido para o padrão do PostgreSQL
   },

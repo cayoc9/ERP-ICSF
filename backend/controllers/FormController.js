@@ -122,3 +122,66 @@ exports.createFormWithFailures = async (req, res) => {
     res.status(500).json({ message: 'Erro ao criar o formulário e as falhas.', error: error.message });
   }
 };
+
+exports.getAllForms = async (req, res) => {
+  try {
+    const forms = await Form.findAll();
+    res.status(200).json(forms);
+  } catch (error) {
+    res.status(500).json({ message: 'Erro ao obter formulários', error });
+  }
+};
+
+// Implementar outros métodos
+exports.getFormById = async (req, res) => {
+  try {
+    const form = await Form.findByPk(req.params.id);
+    if (form) {
+      res.status(200).json(form);
+    } else {
+      res.status(404).json({ message: 'Formulário não encontrado' });
+    }
+  } catch (error) {
+    res.status(500).json({ message: 'Erro ao obter formulário', error });
+  }
+};
+
+exports.createForm = async (req, res) => {
+  try {
+    const newForm = await Form.create(req.body);
+    res.status(201).json(newForm);
+  } catch (error) {
+    res.status(500).json({ message: 'Erro ao criar formulário', error });
+  }
+};
+
+exports.updateForm = async (req, res) => {
+  try {
+    const [updated] = await Form.update(req.body, {
+      where: { id: req.params.id }
+    });
+    if (updated) {
+      const updatedForm = await Form.findByPk(req.params.id);
+      res.status(200).json(updatedForm);
+    } else {
+      res.status(404).json({ message: 'Formulário não encontrado' });
+    }
+  } catch (error) {
+    res.status(500).json({ message: 'Erro ao atualizar formulário', error });
+  }
+};
+
+exports.deleteForm = async (req, res) => {
+  try {
+    const deleted = await Form.destroy({
+      where: { id: req.params.id }
+    });
+    if (deleted) {
+      res.status(204).json();
+    } else {
+      res.status(404).json({ message: 'Formulário não encontrado' });
+    }
+  } catch (error) {
+    res.status(500).json({ message: 'Erro ao deletar formulário', error });
+  }
+};
