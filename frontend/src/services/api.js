@@ -1,19 +1,25 @@
-// filepath: /root/ERP/frontend/src/services/api.js
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: 'http://localhost:5000/api', // Certifique-se de que o backend está rodando nesta URL e porta
-});
-
-// Interceptors para incluir tokens, se necessário
-api.interceptors.request.use(config => {
-  const token = localStorage.getItem('token'); // Se estiver utilizando JWT
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
+  baseURL: import.meta.env.VITE_API_URL || 'http://plataformas.icsf.com.br:5000/api',
+  timeout: 10000,
+  headers: {
+    'Content-Type': 'application/json',
   }
-  return config;
-}, error => {
-  return Promise.reject(error);
 });
 
-export default api;
+// Interceptor para logs
+api.interceptors.request.use(request => {
+  console.log('Request:', request);
+  return request;
+});
+
+api.interceptors.response.use(
+  response => response,
+  error => {
+    console.error('API Error:', error.response);
+    return Promise.reject(error);
+  }
+);
+
+export default api; 

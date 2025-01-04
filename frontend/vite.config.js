@@ -7,7 +7,7 @@ export default defineConfig({
   server: {
     proxy: {
       '/api': {
-        target: 'http://localhost:5000', // URL do backend
+        target: 'http://plataformas.icsf.com.br:5000', // URL do backend
         changeOrigin: true,
         secure: false,
       },

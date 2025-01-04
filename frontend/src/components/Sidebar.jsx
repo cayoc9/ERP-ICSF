@@ -17,10 +17,10 @@ function Sidebar() {
           <NoteAddIcon />
           <span>Reportar Falha</span>
         </Link>
-        <Link to="/hospital-groups" className="flex items-center gap-2 hover:bg-gray-200 p-2 rounded">
+        {/* <Link to="/hospital-groups" className="flex items-center gap-2 hover:bg-gray-200 p-2 rounded">
           <GroupIcon />
           <span>Grupos Hospitalares</span>
-        </Link>
+        </Link> */}
         {/* Adicione outras rotas conforme necessário */}
       </nav>
     </aside>
