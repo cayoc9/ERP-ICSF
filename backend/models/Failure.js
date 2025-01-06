@@ -32,6 +32,14 @@ const Failure = sequelize.define('Failure', {
     type: DataTypes.INTEGER,
     allowNull: false,
   },
+  hospitalSectorId: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    references: {
+      model: 'hospital_sectors',
+      key: 'id'
+    }
+  },
   status: {
     type: DataTypes.STRING,
     allowNull: false,

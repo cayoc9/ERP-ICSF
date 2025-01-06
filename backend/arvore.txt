@@ -2,11 +2,11 @@
 ├── app.js
 ├── arvore.txt
 ├── config
-│   ├── config.json
+│   ├── config.js
 │   └── database.js
 ├── controllers
 │   ├── FailureController.js
-│   ├── formController.js
+│   ├── FormController.js
 │   ├── HospitalController.js
 │   ├── hospitalGroupController.js
 │   ├── IndicatorController.js
@@ -15,25 +15,35 @@
 │   └── TPInconsistenciesController.js
 ├── middlewares
 ├── migrations
-│   ├── 20241221155132-create-hospitals.js
-│   ├── 20241221155132-create-sectors.js
-│   ├── 20241221155133-create-responsibles.js
-│   ├── 20241221155134-create-formularios.js
-│   ├── 20241221155135-create-failures.js
-│   ├── 20241221155135-create-tp_inconsistencies.js
-│   └── 20241221155136-create-indicators.js
+│   ├── 20231010123456-add-observacoes-to-failures.js
+│   ├── 20241221191955-create-forms.js
+│   ├── 20241221192001-create-hospital-groups.js
+│   ├── 20241221192005-create-hospitals.js
+│   ├── 20241221192013-create-indicators.js
+│   ├── 20241221192016-create-responsibles.js
+│   ├── 20241221192024-create-sectors.js
+│   ├── 20241221192027-create-failures.js
+│   ├── 20241221192031-create-tp_inconsistencies.js
+│   ├── 20241231205920-add-observacoes-to-failures.js
+│   ├── [TIMESTAMP]-add-unique-constraint-to-failures.js
+│   ├── xxxx-add-observacoes-to-failures.js
+│   ├── XXXXXX-create-sector-hospital.js
+│   └── XXXXXX-create-sector-types.js
 ├── models
 │   ├── Failure.js
+│   ├── FailureTP_Inconsistencies.js
 │   ├── Form.js
 │   ├── HospitalGroup.js
 │   ├── Hospital.js
+│   ├── HospitalSector.js
 │   ├── index.js
 │   ├── Indicator.js
 │   ├── Responsible.js
 │   ├── Sector.js
+│   ├── SectorType.js
 │   └── TP_Inconsistencies.js
 ├── node_modules
-│   ├──
+│   ├── 
 ├── package.json
 ├── package-lock.json
 ├── routes
@@ -46,5 +56,6 @@
 │   ├── sectors.js
 │   └── tp-inconsistencies.js
 └── seeders
+    └── seed.js
 
-755 directories, 5424 files
+854 directories, 6366 files

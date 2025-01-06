@@ -56,20 +56,18 @@ exports.createFailure = async (req, res) => {
     }
 
     // Criar a falha
-    const newFailure = await Failure.create(
-      {
-        prontuarioCode,
-        formularioId,
-        formularioDate,
-        professionalId,
-        hospitalId,
-        sectorId,
-        status,
-        observacoes,
-        createUser,
-      },
-      { transaction }
-    );
+    const newFailure = await Failure.create({
+      prontuarioCode,
+      formularioId,
+      formularioDate,
+      professionalId,
+      hospitalId,
+      sectorId,
+      status,
+      observacoes,
+      createUser,
+      inconsistencyId: tpInconsistenciaIds[0], // Adiciona o primeiro ID como principal
+    }, { transaction });
 
     // Associar as TPInconsistencies
     const tpInconsistencies = await TPInconsistencies.findAll({

@@ -8,6 +8,14 @@ const Sector = sequelize.define('Sector', {
     primaryKey: true,
     autoIncrement: true, // Se `CD_SETOR` é auto-increment
   },
+  sectorTypeId: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    references: {
+      model: 'sector_types',
+      key: 'id'
+    }
+  },
   name: { // DS_SETOR
     type: DataTypes.STRING(20),
     allowNull: false,
@@ -19,6 +27,10 @@ const Sector = sequelize.define('Sector', {
       model: 'hospitals',
       key: 'id',
     },
+  },
+  isActive: {
+    type: DataTypes.BOOLEAN,
+    defaultValue: true
   },
   createDate: { // CREATE_DATE
     type: DataTypes.DATE,

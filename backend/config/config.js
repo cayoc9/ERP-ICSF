@@ -27,3 +27,4 @@ module.exports = {
     port: process.env.DB_PORT_PROD || 5432, // Corrigido para o padrão do PostgreSQL
   },
 };
+

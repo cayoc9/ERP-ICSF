@@ -1,9 +1,11 @@
 // models/index.js
-const Sequelize = require('sequelize');
-const sequelize = require('../config/database');
+const { Sequelize } = require('sequelize');
+const config = require('../config/database');
+
+const sequelize = new Sequelize(config);
 
 // Importação dos modelos
-const Hospital = require('./Hospital');
+const Hospital = require('./Hospital')(sequelize);
 const Sector = require('./Sector');
 const Responsible = require('./Responsible');
 const Failure = require('./Failure');
@@ -12,6 +14,8 @@ const TPInconsistencies = require('./TP_Inconsistencies');
 const FailureTPInconsistencies = require('./FailureTP_Inconsistencies');
 const Indicator = require('./Indicator');
 const HospitalGroup = require('./HospitalGroup');
+const SectorType = require('./SectorType')(sequelize);
+const HospitalSector = require('./HospitalSector')(sequelize);
 
 // Definição das associações
 
@@ -31,8 +35,8 @@ Failure.belongsTo(Sector, { foreignKey: 'sectorId', as: 'sector' });
 Responsible.hasMany(Failure, { foreignKey: 'professionalId', as: 'failures' });
 Failure.belongsTo(Responsible, { foreignKey: 'professionalId', as: 'responsible' });
 
-// 5. Relações de Form e Failure
-Form.hasMany(Failure, { foreignKey: 'formularioId', as: 'failures' });
+// 5. Relações de Form e Failure (alterando para 1:1)
+Form.hasOne(Failure, { foreignKey: 'formularioId', as: 'failure' });
 Failure.belongsTo(Form, { foreignKey: 'formularioId', as: 'formulario' });
 
 // 6. Relação Muitos-para-Muitos entre Failure e TPInconsistencies via FailureTPInconsistencies
@@ -50,6 +54,30 @@ TPInconsistencies.belongsToMany(Failure, {
   as: 'failures',
 });
 
+// Relações Many-to-Many entre Hospital e SectorType
+Hospital.belongsToMany(SectorType, {
+  through: HospitalSector,
+  foreignKey: 'hospitalId',
+  otherKey: 'sectorTypeId'
+});
+
+SectorType.belongsToMany(Hospital, {
+  through: HospitalSector,
+  foreignKey: 'sectorTypeId',
+  otherKey: 'hospitalId'
+});
+
+// Relação entre HospitalSector e Failure
+HospitalSector.hasMany(Failure, {
+  foreignKey: 'hospitalSectorId',
+  as: 'failures'
+});
+
+Failure.belongsTo(HospitalSector, {
+  foreignKey: 'hospitalSectorId',
+  as: 'hospitalSector'
+});
+
 // Exportação dos modelos e da instância do Sequelize
 module.exports = {
   sequelize,
@@ -63,4 +91,6 @@ module.exports = {
   FailureTPInconsistencies,
   Indicator,
   HospitalGroup,
+  SectorType,
+  HospitalSector,
 };

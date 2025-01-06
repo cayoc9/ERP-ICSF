@@ -129,7 +129,7 @@ function ReportarFalha() {
           prontuarioCode: cdProntuario,
           formularioDate: new Date(),
           professionalId: selectedProfissional,
-          hospitalId: setores.find(s => s.id === selectedSetor)?.hospitalId || null,
+          hospitalId: setores.find(s => s.id === selectedSetor)?.hospitalId || '15',
           sectorId: selectedSetor,
           status: 'Aberto',
           observacoes,
@@ -137,6 +137,8 @@ function ReportarFalha() {
         },
       ],
     };
+
+    console.log('Dados sendo enviados:', formData);
 
     try {
       // Dispara a action Redux que enviará POST para criar Form + Falhas
