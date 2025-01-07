@@ -17,7 +17,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { createFailure } from '../store/formulariosSlice'; 
 import { fetchProfissionais } from '../store/profissionaisSlice';
 import { fetchFormularios } from '../store/formulariosSlice';
-import { fetchInconsistencias } from '../store/inconsistenciasSlice';
+import { fetchInconsistencias, fetchTiposInconsistencias } from '../store/inconsistenciasSlice';
 import { fetchSectors } from '../store/setoresSlice'; 
 
 function ReportarFalha() {
@@ -63,7 +63,7 @@ function ReportarFalha() {
   // Slices diferentes que contêm listas de dados (profissionais, formulários, etc.)
   const profissionais = useSelector((state) => state.profissionais.list);
   const formularios = useSelector((state) => state.formularios.list);
-  const inconsistenciasDisponiveis = useSelector((state) => state.inconsistencias.list);
+  const inconsistenciasDisponiveis = useSelector((state) => state.inconsistencias.tiposInconsistencias);
   const setores = useSelector((state) => state.setores.list);
 
   const formulariosStatus = useSelector((state) => state.formularios.status);
@@ -74,10 +74,10 @@ function ReportarFalha() {
   // -------------------------------------------
   // Assim que o componente monta, chamamos as thunks para popular Redux com dados
   useEffect(() => {
-    dispatch(fetchProfissionais());    // Carrega profissionais (responsáveis)
-    dispatch(fetchFormularios());      // Carrega tipos de formulários
-    dispatch(fetchInconsistencias());  // Carrega tipos de inconsistências
-    dispatch(fetchSectors());          // Carrega setores
+    dispatch(fetchProfissionais());
+    dispatch(fetchFormularios());
+    dispatch(fetchTiposInconsistencias()); // Adicionar esta chamada
+    dispatch(fetchSectors());
   }, [dispatch]);
 
   useEffect(() => {
