@@ -13,11 +13,8 @@ import api from '../services/api'; // axios configurado com baseURL
 export const fetchInconsistencias = createAsyncThunk(
   'inconsistencias/fetchInconsistencias',
   async () => {
-    // GET /api/tp-inconsistencies
-    const response = await api.get('/tp-inconsistencies');
-    // Transforma o objeto em array se necessário
-    const data = Array.isArray(response.data) ? response.data : Object.values(response.data);
-    return data;
+    const response = await api.get('/failures');
+    return response.data;
   }
 );
 
@@ -67,7 +64,15 @@ const inconsistenciasSlice = createSlice({
       })
       .addCase(fetchInconsistencias.fulfilled, (state, action) => {
         state.status = 'succeeded';
-        state.list = action.payload;
+        state.list = action.payload.map(item => ({
+          id: item.id,
+          prontuarioCode: item.prontuarioCode,
+          status: item.status,
+          hospitalName: item.hospital?.name || 'N/A', // Alterado
+          sectorName: item.sector?.name || 'N/A',
+          createDate: item.createDate,
+          updateDate: item.updateDate
+        }));
       })
       .addCase(fetchInconsistencias.rejected, (state, action) => {
         state.status = 'failed';

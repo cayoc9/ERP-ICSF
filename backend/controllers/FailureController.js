@@ -14,17 +14,48 @@ exports.getAllFailures = async (req, res) => {
   try {
     const failures = await Failure.findAll({
       include: [
-        { model: Form, as: 'formulario' },
-        { model: TPInconsistencies, as: 'tpInconsistencies', through: { attributes: [] } },
-        { model: Responsible, as: 'responsible' },
-        { model: Hospital, as: 'hospital' },
-        { model: Sector, as: 'sector' }
+        {
+          model: Hospital,
+          as: 'hospital',
+          attributes: ['id', 'name'] // Removido groupName
+        },
+        {
+          model: Sector,
+          as: 'sector',
+          attributes: ['id', 'name']
+        },
+        {
+          model: TPInconsistencies,
+          as: 'tpInconsistencies',
+          through: { attributes: [] }
+        }
       ],
+      attributes: [
+        'id',
+        'prontuarioCode',
+        'status',
+        'createDate',
+        'updateDate'
+      ]
     });
-    res.status(200).json(failures);
+
+    const formattedFailures = failures.map(failure => ({
+      id: failure.id,
+      prontuarioCode: failure.prontuarioCode,
+      status: failure.status,
+      hospitalName: failure.hospital?.name || 'N/A', // Alterado
+      sectorName: failure.sector?.name || 'N/A',
+      createDate: failure.createDate,
+      updateDate: failure.updateDate
+    }));
+
+    res.status(200).json(formattedFailures);
   } catch (error) {
-    console.error('Erro ao obter as falhas:', error);
-    res.status(500).json({ message: 'Erro ao obter as falhas.', error });
+    console.error('Erro ao obter falhas:', error);
+    res.status(500).json({ 
+      message: 'Erro ao obter falhas.', 
+      error: error.message 
+    });
   }
 };
 
