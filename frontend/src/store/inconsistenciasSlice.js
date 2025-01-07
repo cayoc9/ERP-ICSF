@@ -15,7 +15,9 @@ export const fetchInconsistencias = createAsyncThunk(
   async () => {
     // GET /api/tp-inconsistencies
     const response = await api.get('/tp-inconsistencies');
-    return response.data;
+    // Transforma o objeto em array se necessário
+    const data = Array.isArray(response.data) ? response.data : Object.values(response.data);
+    return data;
   }
 );
 

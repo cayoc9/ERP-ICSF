@@ -74,16 +74,20 @@ function ReportarFalha() {
     dispatch(fetchSectors());          // Carrega setores
   }, [dispatch]);
 
+  useEffect(() => {
+    console.log('Inconsistências disponíveis:', inconsistenciasDisponiveis);
+    console.log('Lista de inconsistências:', listaInconsistencias);
+  }, [inconsistenciasDisponiveis, listaInconsistencias]);
+
   /**
    * handleAddInconsistencia
    * Adiciona a inconsistência selecionada ao array 'listaInconsistencias', 
    * desde que ela não esteja duplicada.
    */
   const handleAddInconsistencia = () => {
-    // Só adiciona se estiver selecionado e não estiver repetido
     if (selectedInconsistencia && !listaInconsistencias.includes(selectedInconsistencia)) {
       setListaInconsistencias([...listaInconsistencias, selectedInconsistencia]);
-      setSelectedInconsistencia(''); // Reseta o campo de inconsistência
+      setSelectedInconsistencia('');
     }
   };
 
@@ -162,6 +166,13 @@ function ReportarFalha() {
     }
   };
 
+  // Função para encontrar a inconsistência no array
+  const encontrarInconsistencia = (id) => {
+    return inconsistenciasDisponiveis.find(inc => 
+      String(inc.id) === String(id)
+    );
+  };
+
   // -------------------------------------------
   // Renderização do JSX
   // -------------------------------------------
@@ -233,10 +244,13 @@ function ReportarFalha() {
             className="p-1 border rounded w-full"
           >
             <option value="">Selecione</option>
-            {inconsistenciasDisponiveis.map((i) => (
-              <option key={i.id} value={i.id}>
-                {i.description}
-              </option>
+            {/* Filtrando as inconsistências que já foram adicionadas */}
+            {inconsistenciasDisponiveis
+              ?.filter(inc => !listaInconsistencias.includes(String(inc.id)))
+              .map((inc) => (
+                <option key={inc.id} value={inc.id}>
+                  {inc.description}
+                </option>
             ))}
           </select>
 
@@ -252,16 +266,16 @@ function ReportarFalha() {
 
         {/* Lista das inconsistências adicionadas */}
         <ul className="mt-2 list-disc list-inside">
-          {listaInconsistencias.map((inc, idx) => {
-            // Busca o objeto de inconsistência completo para exibir o 'description'
-            const inconsistencia = inconsistenciasDisponiveis.find((i) => i.id === inc);
+          {listaInconsistencias.map((incId) => {
+            const inconsistencia = encontrarInconsistencia(incId);
+            
             return (
-              <li key={idx} className="flex items-center justify-between">
+              <li key={incId} className="flex items-center justify-between">
                 <span>
                   {inconsistencia ? inconsistencia.description : 'Inconsistência não encontrada'}
                 </span>
                 <button
-                  onClick={() => handleRemoveInconsistencia(inc)}
+                  onClick={() => handleRemoveInconsistencia(incId)}
                   className="text-red-500 hover:text-red-700"
                 >
                   (Remover)
