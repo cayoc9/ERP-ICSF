@@ -5,7 +5,7 @@
 
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    await queryInterface.createTable('HospitalGroups', {
+    await queryInterface.createTable('hospital_groups', {
       id: {
         allowNull: false,
         autoIncrement: true,
@@ -16,21 +16,29 @@ module.exports = {
         type: Sequelize.STRING(255),
         allowNull: false
       },
-      createdAt: {
+      createDate: {
         allowNull: false,
         type: Sequelize.DATE,
         defaultValue: Sequelize.literal('NOW()')
       },
-      updatedAt: {
+      updateDate: {
         allowNull: false,
         type: Sequelize.DATE,
         defaultValue: Sequelize.literal('NOW()')
+      },
+      createUser: {
+        type: Sequelize.INTEGER,
+        allowNull: true
+      },
+      updateUser: {
+        type: Sequelize.INTEGER,
+        allowNull: true
       }
     });
   },
 
   down: async (queryInterface, Sequelize) => {
-    await queryInterface.dropTable('HospitalGroups');
+    await queryInterface.dropTable('hospital_groups');
   }
 };
 

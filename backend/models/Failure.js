@@ -2,53 +2,71 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../config/database');
 
-const Failure = sequelize.define('Failure', {
+const failureSchema = {
   id: {
     type: DataTypes.INTEGER,
     primaryKey: true,
-    autoIncrement: true,
+    autoIncrement: true
   },
   prontuarioCode: {
     type: DataTypes.STRING,
-    allowNull: false,
+    allowNull: false
   },
   formularioId: {
     type: DataTypes.INTEGER,
-    allowNull: false,
+    allowNull: false
   },
   formularioDate: {
     type: DataTypes.DATE,
-    allowNull: false,
+    allowNull: true
+  },
+  inconsistencyId: {
+    type: DataTypes.INTEGER,
+    allowNull: false
   },
   professionalId: {
     type: DataTypes.INTEGER,
-    allowNull: false,
+    allowNull: false
   },
   hospitalId: {
     type: DataTypes.INTEGER,
-    allowNull: false,
+    allowNull: false
   },
   sectorId: {
     type: DataTypes.INTEGER,
-    allowNull: false,
+    allowNull: false
   },
   status: {
-    type: DataTypes.STRING,
-    allowNull: false,
+    type: DataTypes.STRING(20),
+    allowNull: false
   },
-  observacoes: { // Adicionando a coluna observacoes
-    type: DataTypes.STRING,
-    allowNull: true,
+  createDate: {
+    type: DataTypes.DATE,
+    allowNull: true
   },
   createUser: {
     type: DataTypes.INTEGER,
-    allowNull: true,
+    allowNull: true
+  },
+  updateDate: {
+    type: DataTypes.DATE,
+    allowNull: true
   },
   updateUser: {
     type: DataTypes.INTEGER,
-    allowNull: true,
+    allowNull: true
   },
-}, {
+  description: {
+    type: DataTypes.STRING,
+    allowNull: false
+  },
+  observacoes: {
+    type: DataTypes.TEXT,
+    allowNull: true
+  }
+};
+
+const Failure = sequelize.define('Failure', failureSchema, {
   tableName: 'failures',
   timestamps: false,
 });

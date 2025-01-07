@@ -2,47 +2,47 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../config/database');
 
-const Indicator = sequelize.define('Indicator', {
+const indicatorSchema = {
   id: {
     type: DataTypes.UUID,
     primaryKey: true,
-    defaultValue: DataTypes.UUIDV4,
+    defaultValue: DataTypes.UUIDV4
   },
-  name: { // name
+  name: {
     type: DataTypes.STRING(30),
-    allowNull: false,
+    allowNull: false
   },
-  value: { // value
-    type: DataTypes.FLOAT,
-    allowNull: false,
+  value: {
+    type: DataTypes.DOUBLE,
+    allowNull: false
   },
-  description: { // description
+  description: {
     type: DataTypes.TEXT,
-    allowNull: true,
+    allowNull: true
   },
-  status: { // status
+  status: {
     type: DataTypes.BOOLEAN,
-    allowNull: false,
-    defaultValue: true, // Active
+    allowNull: false
   },
-  createDate: { // CREATE_DATE
+  createDate: {
     type: DataTypes.DATE,
-    allowNull: true,
-    defaultValue: DataTypes.NOW,
+    allowNull: true
   },
-  createUser: { // CREATE_USER
+  createUser: {
     type: DataTypes.INTEGER,
-    allowNull: true,
+    allowNull: true
   },
-  updateDate: { // UPDATE_DATE
+  updateDate: {
     type: DataTypes.DATE,
-    allowNull: true,
+    allowNull: true
   },
-  updateUser: { // UPDATE_USER
+  updateUser: {
     type: DataTypes.INTEGER,
-    allowNull: true,
-  },
-}, {
+    allowNull: true
+  }
+}
+
+const Indicator = sequelize.define('Indicator', indicatorSchema, {
   tableName: 'indicators',
   timestamps: false,
 });

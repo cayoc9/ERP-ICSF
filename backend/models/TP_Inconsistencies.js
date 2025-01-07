@@ -5,39 +5,39 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../config/database');
 
-const TPInconsistencies = sequelize.define('TPInconsistencies', {
+const tpInconsistenciesSchema = {
   id: {
     type: DataTypes.INTEGER,
     primaryKey: true,
-    autoIncrement: true,
+    autoIncrement: true
   },
   description: {
-    type: DataTypes.STRING, // Ou TEXT se preferir
-    allowNull: false,
+    type: DataTypes.STRING(225),
+    allowNull: false
   },
   status: {
     type: DataTypes.BOOLEAN,
-    allowNull: false,
-    defaultValue: true,
+    allowNull: false
   },
   createDate: {
     type: DataTypes.DATE,
-    allowNull: true,
-    defaultValue: DataTypes.NOW,
+    allowNull: true
   },
   createUser: {
     type: DataTypes.INTEGER,
-    allowNull: true,
+    allowNull: true
   },
   updateDate: {
     type: DataTypes.DATE,
-    allowNull: true,
+    allowNull: true
   },
   updateUser: {
     type: DataTypes.INTEGER,
-    allowNull: true,
-  },
-}, {
+    allowNull: true
+  }
+}
+
+const TPInconsistencies = sequelize.define('TPInconsistencies', tpInconsistenciesSchema, {
   tableName: 'tp_inconsistencies',
   timestamps: false, // Caso não use createdAt/updatedAt automáticos
 });

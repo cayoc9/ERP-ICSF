@@ -50,6 +50,12 @@ TPInconsistencies.belongsToMany(Failure, {
   as: 'failures',
 });
 
+// 7. Relação de Failure e TPInconsistencies
+Failure.belongsTo(TPInconsistencies, {
+  foreignKey: 'inconsistencyId',
+  as: 'inconsistency'
+});
+
 // Exportação dos modelos e da instância do Sequelize
 module.exports = {
   sequelize,

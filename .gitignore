@@ -68,3 +68,5 @@ Thumbs.db
 *~
 extracted_links.md
 extracted_links.txt
+postresql/
+postgresql/SELECT.sql
