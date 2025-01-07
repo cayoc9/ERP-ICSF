@@ -1,7 +1,8 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:5000/api',
+  // Remove a verificação de VITE_API_URL e usa apenas o proxy do Vite
+  baseURL: 'http://localhost:5000/api',
   timeout: 10000,
   headers: {
     'Content-Type': 'application/json',
@@ -22,4 +23,4 @@ api.interceptors.response.use(
   }
 );
 
-export default api; 
+export default api;

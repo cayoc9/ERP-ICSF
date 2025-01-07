@@ -4,14 +4,13 @@
  */
 
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import axios from 'axios';
+import api from '../services/api';
 
 // Thunk assíncrono para buscar a lista de responsáveis via GET /api/responsibles
 export const fetchProfissionais = createAsyncThunk(
   'profissionais/fetchProfissionais',
   async () => {
-    // Ajuste a baseURL no axios conforme seu setup (pode ser 'http://localhost:5000/api')
-    const response = await axios.get('/api/responsibles');
+    const response = await api.get('/responsibles');
     return response.data;
   }
 );

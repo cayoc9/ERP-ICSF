@@ -33,21 +33,25 @@ const specs = swaggerJsdoc(options);
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs));
 
 // Middlewares
-app.use(cors({
-  origin: '*', // Altere para a URL do seu frontend em produção
-  methods: ['GET', 'POST', 'PUT', 'DELETE'],
-  credentials: true, // Se estiver utilizando cookies
-}));
+app.use(cors());
 app.use(express.json());
 
+// Adicionar middleware de log
+app.use('/api/forms/with-failures', (req, res, next) => {
+  if (req.method === 'POST') {
+    console.log('Payload recebido em /forms/with-failures:', req.body);
+  }
+  next();
+});
+
 // Rotas
-app.use('/api/sectors', sectorRoutes);
 app.use('/api/responsibles', responsibleRoutes);
+app.use('/api/forms', formRoutes);
+app.use('/api/tp-inconsistencies', tpInconsistenciesRoutes);
+app.use('/api/sectors', sectorRoutes);
 app.use('/api/failures', failureRoutes);
 app.use('/api/indicators', indicatorRoutes);
 app.use('/api/hospitals', hospitalRoutes);
-app.use('/api/forms', formRoutes);
-app.use('/api/tp-inconsistencies', tpInconsistenciesRoutes);
 app.use('/api/hospital-groups', hospitalGroupRoutes);
 
 const PORT = process.env.PORT || 5000;

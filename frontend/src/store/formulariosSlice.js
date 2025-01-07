@@ -10,19 +10,26 @@ export const fetchFormularios = createAsyncThunk(
   'formularios/fetchFormularios',
   async () => {
     const response = await api.get('/forms'); // GET /api/forms
+    console.log('Response from /forms:', response.data); // Adicione este log
     return response.data;
   }
 );
 
+// Nova action thunk para criar formulário com falhas
 export const createFormWithFailures = createAsyncThunk(
   'formularios/createFormWithFailures',
-  async (formData, { rejectWithValue }) => {
-    try {
-      const response = await api.post('/forms/with-failures', formData); // POST /api/forms/with-failures
-      return response.data;
-    } catch (err) {
-      return rejectWithValue(err.response.data);
-    }
+  async (formData) => {
+    const response = await api.post('/forms/with-failures', formData);
+    return response.data;
+  }
+);
+
+// Nova action thunk para criar falha
+export const createFailure = createAsyncThunk(
+  'formularios/createFailure',
+  async (failureData) => {
+    const response = await api.post('/failures', failureData);
+    return response.data;
   }
 );
 
@@ -52,11 +59,23 @@ const formulariosSlice = createSlice({
       })
       .addCase(createFormWithFailures.fulfilled, (state, action) => {
         state.status = 'succeeded';
-        state.list.push(action.payload);
+        if (action.payload) {
+          state.list.push(action.payload);
+        }
       })
       .addCase(createFormWithFailures.rejected, (state, action) => {
         state.status = 'failed';
-        state.error = action.payload?.message || action.error.message;
+        state.error = action.error.message;
+      })
+      .addCase(createFailure.pending, (state) => {
+        state.status = 'loading';
+      })
+      .addCase(createFailure.fulfilled, (state) => {
+        state.status = 'succeeded';
+      })
+      .addCase(createFailure.rejected, (state, action) => {
+        state.status = 'failed';
+        state.error = action.error.message;
       });
   },
 });

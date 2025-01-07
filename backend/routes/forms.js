@@ -12,9 +12,6 @@ router.get('/:id', FormController.getFormById);
 // Rota para criar um novo form
 router.post('/', FormController.createForm);
 
-// Rota para criar um form com múltiplas falhas
-router.post('/with-failures', FormController.createFormWithFailures);
-
 // Rota para atualizar um form existente
 router.put('/:id', FormController.updateForm);
 

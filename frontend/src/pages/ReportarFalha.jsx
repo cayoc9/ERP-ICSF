@@ -14,7 +14,7 @@ import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 // Ações importadas de diferentes slices do Redux
-import { createFormWithFailures } from '../store/formulariosSlice'; 
+import { createFailure } from '../store/formulariosSlice'; 
 import { fetchProfissionais } from '../store/profissionaisSlice';
 import { fetchFormularios } from '../store/formulariosSlice';
 import { fetchInconsistencias } from '../store/inconsistenciasSlice';
@@ -54,6 +54,9 @@ function ReportarFalha() {
   // Armazenar mensagem de erro, se ocorrer
   const [error, setError] = useState(null);
 
+  // Adicionar novo state para hospitalId
+  const [hospitalId, setHospitalId] = useState(15); // ID fixo temporário
+
   // -------------------------------------------
   // Acessando dados do Redux
   // -------------------------------------------
@@ -62,6 +65,9 @@ function ReportarFalha() {
   const formularios = useSelector((state) => state.formularios.list);
   const inconsistenciasDisponiveis = useSelector((state) => state.inconsistencias.list);
   const setores = useSelector((state) => state.setores.list);
+
+  const formulariosStatus = useSelector((state) => state.formularios.status);
+  const formulariosError = useSelector((state) => state.formularios.error);
 
   // -------------------------------------------
   // Efeito para carregar dados iniciais
@@ -77,7 +83,14 @@ function ReportarFalha() {
   useEffect(() => {
     console.log('Inconsistências disponíveis:', inconsistenciasDisponiveis);
     console.log('Lista de inconsistências:', listaInconsistencias);
-  }, [inconsistenciasDisponiveis, listaInconsistencias]);
+    console.log('Formulários disponíveis:', formularios); // Adicione este log
+  }, [inconsistenciasDisponiveis, listaInconsistencias, formularios]);
+
+  useEffect(() => {
+    if (formulariosStatus === 'failed' && formulariosError) {
+      setError(formulariosError);
+    }
+  }, [formulariosStatus, formulariosError]);
 
   /**
    * handleAddInconsistencia
@@ -107,14 +120,8 @@ function ReportarFalha() {
    * chama a ação Redux que criará o Form + Falhas no backend.
    */
   const handleSubmit = async () => {
-    // Verifica se todos os campos obrigatórios foram preenchidos
-    if (
-      !selectedProfissional ||
-      !cdProntuario ||
-      !selectedFormulario ||
-      listaInconsistencias.length === 0 ||
-      !selectedSetor
-    ) {
+    // Validar os dados do formulário
+    if (!cdProntuario || !selectedFormulario || !selectedProfissional || !hospitalId || !selectedSetor) {
       alert('Por favor, preencha todos os campos obrigatórios.');
       return;
     }
@@ -122,45 +129,34 @@ function ReportarFalha() {
     setLoading(true);
     setError(null);
 
-    // Monta o objeto que enviamos para o backend
-    // "formData" inclui um array "failures" com 1 falha,
-    // mas poderia ter várias se a lógica do sistema permitir.
-    const formData = {
-      description: 'Relatório de Falha', // Pode ser dinâmico, se necessário
-      createUser: selectedProfissional,   // Usuário que criou este form
-      failures: [
-        {
-          prontuarioCode: cdProntuario,
-          formularioDate: new Date(),
-          professionalId: selectedProfissional,
-          hospitalId: setores.find(s => s.id === selectedSetor)?.hospitalId || null,
-          sectorId: selectedSetor,
-          status: 'Aberto',
-          observacoes,
-          tpInconsistenciaIds: listaInconsistencias,
-        },
-      ],
+    const failureData = {
+      prontuarioCode: cdProntuario,
+      formularioId: selectedFormulario,
+      formularioDate: new Date(),
+      professionalId: selectedProfissional,
+      hospitalId: hospitalId,
+      sectorId: selectedSetor,
+      observacoes,
+      tpInconsistenciaIds: listaInconsistencias,
+      createUser: selectedProfissional
     };
 
     try {
-      // Dispara a action Redux que enviará POST para criar Form + Falhas
-      await dispatch(createFormWithFailures(formData)).unwrap();
-
-      // Se chegou até aqui sem erro, sinaliza sucesso ao usuário
-      alert('Formulário e inconsistências reportadas com sucesso!');
-
-      // Reseta todos os campos do formulário
-      setSelectedProfissional('');
+      await dispatch(createFailure(failureData)).unwrap();
+      
+      // Resetar formulário após sucesso
       setCdProntuario('');
       setSelectedFormulario('');
-      setListaInconsistencias([]);
+      setSelectedProfissional('');
+      setHospitalId('');
       setSelectedSetor('');
       setObservacoes('');
-
-    } catch (err) {
-      // Caso haja erro, logs no console e salvamos mensagem de erro no estado
-      console.error('Erro ao reportar inconsistência:', err);
-      setError('Erro ao reportar inconsistência.');
+      setListaInconsistencias([]);
+      
+      alert('Falha reportada com sucesso!');
+    } catch (error) {
+      console.error('Erro ao reportar falha:', error);
+      setError('Ocorreu um erro ao reportar a falha. Tente novamente.');
     } finally {
       setLoading(false);
     }
@@ -321,10 +317,11 @@ function ReportarFalha() {
       <button
         onClick={handleSubmit}
         className="bg-blue-500 text-white px-4 py-2 rounded w-full"
-        disabled={loading}
+        disabled={formulariosStatus === 'loading'}
       >
-        {loading ? 'Enviando...' : 'Enviar'}
+        {formulariosStatus === 'loading' ? 'Enviando...' : 'Enviar'}
       </button>
+      {error && <p className="text-red-500">{error}</p>}
     </div>
   );
 }

@@ -7,7 +7,7 @@
 
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    await queryInterface.addColumn('failures', 'observacoes', {
+    await queryInterface.addColumn('Failures', 'observacoes', {
       type: Sequelize.TEXT,
       allowNull: true,
     });
@@ -15,6 +15,6 @@ module.exports = {
 
   down: async (queryInterface, Sequelize) => {
     // Se for preciso reverter, remove a coluna 'observacoes'
-    await queryInterface.removeColumn('failures', 'observacoes');
+    await queryInterface.removeColumn('Failures', 'observacoes');
   }
 };

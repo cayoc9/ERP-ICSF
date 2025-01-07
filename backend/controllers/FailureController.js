@@ -1,5 +1,13 @@
 // controllers/failureController.js
-const { Failure, Form, TPInconsistencies, Responsible, Hospital, Sector } = require('../models');
+const { 
+  Failure, 
+  Form, 
+  TPInconsistencies, 
+  Responsible, 
+  Hospital, 
+  Sector,
+  sequelize 
+} = require('../models');
 
 // Obter todas as falhas
 exports.getAllFailures = async (req, res) => {
@@ -46,63 +54,65 @@ exports.getFailureById = async (req, res) => {
 
 // Criar uma nova falha
 exports.createFailure = async (req, res) => {
-  const { prontuarioCode, formularioId, formularioDate, tpInconsistenciaIds, professionalId, hospitalId, sectorId, status, createUser, observacoes } = req.body;
-  const transaction = await sequelize.transaction();
+  let transaction;
   
   try {
-    // Validações
-    if (!prontuarioCode || !formularioId || !professionalId || !hospitalId || !sectorId || !status || !Array.isArray(tpInconsistenciaIds) || tpInconsistenciaIds.length === 0) {
-      throw new Error('Campos obrigatórios faltando ou inconsistências inválidas.');
+    transaction = await sequelize.transaction();
+    
+    const {
+      prontuarioCode,
+      formularioId,
+      formularioDate,
+      professionalId,
+      hospitalId,
+      sectorId,
+      observacoes,
+      tpInconsistenciaIds,
+      createUser
+    } = req.body;
+
+    // Criar a falha com status padrão
+    const newFailure = await Failure.create({
+      prontuarioCode,
+      formularioId,
+      formularioDate: formularioDate || new Date(),
+      professionalId,
+      hospitalId,
+      sectorId,
+      observacoes,
+      createUser,
+      status: 'Pending', // Adicionando status padrão
+      createDate: new Date() // Adicionando data de criação
+    }, { transaction });
+
+    // Associar as inconsistências
+    if (tpInconsistenciaIds?.length > 0) {
+      await Promise.all(tpInconsistenciaIds.map(async (tpInconsistenciaId) => {
+        await newFailure.addTpInconsistency(tpInconsistenciaId, { transaction });
+      }));
     }
 
-    // Criar a falha
-    const newFailure = await Failure.create(
-      {
-        prontuarioCode,
-        formularioId,
-        formularioDate,
-        professionalId,
-        hospitalId,
-        sectorId,
-        status,
-        observacoes,
-        createUser,
-      },
-      { transaction }
-    );
-
-    // Associar as TPInconsistencies
-    const tpInconsistencies = await TPInconsistencies.findAll({
-      where: { id: tpInconsistenciaIds },
-      transaction,
-    });
-
-    if (tpInconsistencies.length !== tpInconsistenciaIds.length) {
-      throw new Error('Algumas TPInconsistencies fornecidas não foram encontradas.');
-    }
-
-    await newFailure.addTpInconsistencies(tpInconsistencies, { transaction });
-
-    // Commit da transação
     await transaction.commit();
 
-    // Recarregar a falha com as associações
-    const failureWithAssociations = await Failure.findByPk(newFailure.id, {
+    // Retornar com associações
+    const createdFailure = await Failure.findByPk(newFailure.id, {
       include: [
         { model: Form, as: 'formulario' },
-        { model: TPInconsistencies, as: 'tpInconsistencies', through: { attributes: [] } },
+        { model: TPInconsistencies, as: 'tpInconsistencies' },
         { model: Responsible, as: 'responsible' },
         { model: Hospital, as: 'hospital' },
         { model: Sector, as: 'sector' }
-      ],
+      ]
     });
 
-    res.status(201).json(failureWithAssociations);
-
+    res.status(201).json(createdFailure);
   } catch (error) {
-    await transaction.rollback();
-    console.error('Erro ao criar a falha:', error);
-    res.status(500).json({ message: 'Erro ao criar a falha.', error: error.message });
+    if (transaction) await transaction.rollback();
+    console.error('Erro ao criar falha:', error);
+    res.status(500).json({ 
+      message: 'Erro ao criar falha', 
+      error: error.message 
+    });
   }
 };
 

@@ -1,5 +1,5 @@
 // models/Form.js
-const { DataTypes } = require('sequelize');
+const { Model, DataTypes } = require('sequelize');
 const sequelize = require('../config/database');
 
 const Form = sequelize.define('Form', {
@@ -28,10 +28,10 @@ const Form = sequelize.define('Form', {
   updateUser: { // UPDATE_USER
     type: DataTypes.INTEGER,
     allowNull: true,
-  },
+  }
 }, {
-  tableName: 'forms',
-  timestamps: false,
+  tableName: 'forms', // Especifica explicitamente o nome da tabela
+  timestamps: false  // Desativa timestamps automáticos
 });
 
 module.exports = Form;
