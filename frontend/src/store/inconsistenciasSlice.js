@@ -1,19 +1,29 @@
 /**
- * Slice para inconsistências de prontuário (TPInconsistencies).
- * - fetchInconsistencias() carrega dados via GET /tp-inconsistencies
- * - addInconsistencia() chama POST /tp-inconsistencies
- * - updateInconsistencia() chama PUT /tp-inconsistencies/:id
- * - removeInconsistencia() deleta /tp-inconsistencies/:id
+ * Slice para gerenciar tanto tipos de inconsistências quanto falhas reportadas.
+ * - fetchInconsistencias() carrega falhas via GET /failures
+ * - fetchTiposInconsistencias() carrega tipos via GET /tp-inconsistencies
+ * - addInconsistencia() cria via POST /tp-inconsistencies
+ * - updateInconsistencia() atualiza via PUT /tp-inconsistencies/:id
+ * - removeInconsistencia() remove via DELETE /tp-inconsistencies/:id
  */
 
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import api from '../services/api'; // axios configurado com baseURL
 
-// Carrega a lista de TPInconsistencies do backend
+// Carrega a lista de falhas para exibição na página de indicadores
 export const fetchInconsistencias = createAsyncThunk(
   'inconsistencias/fetchInconsistencias',
   async () => {
     const response = await api.get('/failures');
+    return response.data;
+  }
+);
+
+// Nova action para carregar tipos de inconsistências
+export const fetchTiposInconsistencias = createAsyncThunk(
+  'inconsistencias/fetchTiposInconsistencias',
+  async () => {
+    const response = await api.get('/tp-inconsistencies');
     return response.data;
   }
 );
@@ -51,14 +61,16 @@ export const removeInconsistencia = createAsyncThunk(
 const inconsistenciasSlice = createSlice({
   name: 'inconsistencias',
   initialState: {
-    list: [],
+    list: [], // Lista de falhas para Indicadores.jsx
+    tiposInconsistencias: [], // Nova lista para tipos de inconsistências
     status: 'idle',
+    tiposStatus: 'idle',
     error: null,
   },
   reducers: {},
   extraReducers: (builder) => {
     builder
-      // Carregar Inconsistências
+      // Carregar Falhas (para Indicadores.jsx)
       .addCase(fetchInconsistencias.pending, (state) => {
         state.status = 'loading';
       })
@@ -76,6 +88,19 @@ const inconsistenciasSlice = createSlice({
       })
       .addCase(fetchInconsistencias.rejected, (state, action) => {
         state.status = 'failed';
+        state.error = action.error.message;
+      })
+
+      // Carregar Tipos de Inconsistências (para ReportarFalha.jsx)
+      .addCase(fetchTiposInconsistencias.pending, (state) => {
+        state.tiposStatus = 'loading';
+      })
+      .addCase(fetchTiposInconsistencias.fulfilled, (state, action) => {
+        state.tiposStatus = 'succeeded';
+        state.tiposInconsistencias = action.payload;
+      })
+      .addCase(fetchTiposInconsistencias.rejected, (state, action) => {
+        state.tiposStatus = 'failed';
         state.error = action.error.message;
       })
 
