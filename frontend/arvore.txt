@@ -1,42 +1,24 @@
-.
-├── arvore.txt
-├── eslint.config.js
-├── index.html
-├── node_modules
-│   ├── 
-├── package.json
-├── package-lock.json
-├── postcss.config.js
-├── public
-│   └── vite.svg
-├── README.md
-├── src
-│   ├── App.css
-│   ├── App.jsx
-│   ├── assets
-│   │   └── react.svg
-│   ├── components
-│   │   ├── Header.jsx
-│   │   └── Sidebar.jsx
-│   ├── hooks
-│   ├── index.css
-│   ├── main.jsx
-│   ├── pages
-│   │   ├── HospitalGroups.jsx
-│   │   ├── Indicadores.jsx
-│   │   └── ReportarFalha.jsx
-│   ├── services
-│   │   ├── api.js
-│   │   └── mockService.js
-│   ├── store
-│   │   ├── formulariosSlice.js
-│   │   ├── hospitalGroupsSlice.js
-│   │   ├── inconsistenciasSlice.js
-│   │   ├── index.js
-│   │   ├── profissionaisSlice.js
-│   │   └── setoresSlice.js
-│   └── styles
-├── tailwind.config.js
-└── vite.config.js
-
-2298 directories, 46498 files
+frontend/
+├── dist/                      # Pasta de build para produção
+│   ├── assets/               # Assets compilados
+│   │   ├── index-MfB5_r6M.js
+│   │   └── index-CiULZK0C.css
+│   ├── index.html
+│   └── \vite.svg
+├── node_modules/             # Dependências do projeto
+├── public/                   # Arquivos públicos estáticos
+│   └── vite.svg
+├── src/                      # Código fonte da aplicação
+│   ├── assets/              # Imagens, fontes e outros recursos
+│   ├── components/          # Componentes React reutilizáveis
+│   ├── pages/              # Páginas/rotas da aplicação
+│   ├── services/           # Serviços e integrações com APIs
+│   ├── styles/             # Arquivos de estilo
+│   ├── App.jsx            # Componente principal
+│   ├── main.jsx          # Ponto de entrada da aplicação
+│   └── index.css         # Estilos globais
+├── .gitignore              # Lista de arquivos ignorados pelo git
+├── package.json           # Configurações e dependências do projeto
+├── package-lock.json      # Lock file das dependências
+├── README.md             # Documentação do projeto
+└── vite.config.js        # Configuração do Vite
