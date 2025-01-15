@@ -3,7 +3,6 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import NoteAddIcon from '@mui/icons-material/NoteAdd';
-import GroupIcon from '@mui/icons-material/Group';
 
 function Sidebar() {
   return (
@@ -17,11 +16,6 @@ function Sidebar() {
           <NoteAddIcon />
           <span>Reportar Falha</span>
         </Link>
-        {/* <Link to="/hospital-groups" className="flex items-center gap-2 hover:bg-gray-200 p-2 rounded">
-          <GroupIcon />
-          <span>Grupos Hospitalares</span>
-        </Link> */}
-        {/* Adicione outras rotas conforme necessário */}
       </nav>
     </aside>
   );

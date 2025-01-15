@@ -6,7 +6,7 @@ import { fetchFormularios } from '../store/formulariosSlice';
 import { fetchInconsistencias, fetchTiposInconsistencias } from '../store/inconsistenciasSlice';
 import { fetchSectors } from '../store/setoresSlice';
 
-function ReportarFalha() {
+function Incosistencies() {
   const dispatch = useDispatch();
 
   // -------------------------------------------
@@ -319,4 +319,4 @@ function ReportarFalha() {
   );
 }
 
-export default ReportarFalha;
+export default Incosistencies;

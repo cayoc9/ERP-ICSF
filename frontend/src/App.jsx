@@ -7,8 +7,8 @@ import { Routes, Route } from 'react-router-dom';
 import Header from './components/Header';
 import Sidebar from './components/Sidebar';
 import Indicadores from './pages/Indicadores';
-import ReportarFalha from './pages/ReportarFalha';
-import HospitalGroups from './pages/HospitalGroups'; // Nova página
+import Home from './pages/Home';
+import Incosistencies from './pages/Incosistencies';
 
 function App() {
   return (
@@ -18,10 +18,9 @@ function App() {
         <Sidebar />
         <div className="flex-1 p-4 overflow-auto">
           <Routes>
-            <Route path="/" element={<Indicadores />} />
-            <Route path="/reportar" element={<ReportarFalha />} />
-            <Route path="/hospital-groups" element={<HospitalGroups />} /> {/* Nova rota */}
-            {/* Adicione outras rotas conforme necessário */}
+            <Route path="/" element={<Home />} />
+            <Route path="/Indicadores" element={<Indicadores />} />
+            <Route path="/Incosistencias" element={<Incosistencies />} />
           </Routes>
         </div>
       </div>

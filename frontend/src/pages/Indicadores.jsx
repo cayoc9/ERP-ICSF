@@ -1,49 +1,127 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { fetchInconsistencias, removeInconsistencia } from '../store/inconsistenciasSlice';
+import {
+  setStartDate,
+  setEndDate,
+  setSector,
+  setProfessional,
+  setStatus,
+  resetFilters
+} from '../store/filtersSlice';
+import LineGraph from '../components/charts/LineGraph';
+import PieGraph from '../components/charts/PieGraph';
+import BarGraph from '../components/charts/BarGraph';
+
+// Mock data for dropdowns
+const MOCK_SECTORS = [
+  'Centro Cirúrgico',
+  '2º Andar Ginecologia',
+  'UTI Adulto',
+  'Pronto Socorro',
+  'Ambulatório'
+];
+
+const MOCK_PROFESSIONALS = [
+  'Dr. Silva (Médico)',
+  'Enf. Santos (Enfermeiro)',
+  'Dr. Oliveira (Médico)',
+  'Téc. Costa (Técnico)',
+  'Enf. Lima (Enfermeiro)'
+];
+
+const MOCK_STATUS = [
+  'Todos',
+  'Pendente',
+  'Resolvido'
+];
+
+// Mock data for charts
+const mockData = {
+  monthlyResolved: [
+    { month: 'Jan', value: 10 },
+    { month: 'Fev', value: 15 },
+    { month: 'Mar', value: 12 },
+    { month: 'Abr', value: 18 },
+    { month: 'Mai', value: 22 },
+    { month: 'Jun', value: 20 },
+  ],
+};
 
 function Indicadores() {
   const dispatch = useDispatch();
-  const { list, status, error } = useSelector((state) => state.inconsistencias);
+  const filters = useSelector(state => state.filters);
 
-  useEffect(() => {
-    if (status === 'idle') {
-      dispatch(fetchInconsistencias());
-    }
-  }, [status, dispatch]);
-
-  const handleRemove = (id) => {
-    if (window.confirm('Tem certeza que deseja excluir esta inconsistência?')) {
-      dispatch(removeInconsistencia(id));
-    }
+  const handleReset = () => {
+    dispatch(resetFilters());
   };
 
   return (
-    <div className="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8 animate-fade-in">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-secondary-900">Inconsistências do Prontuário</h1>
-        <p className="mt-2 text-secondary-600">Visualize e gerencie as inconsistências reportadas</p>
-      </div>
-
-      {status === 'loading' && (
-        <div className="flex justify-center items-center py-12">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600"></div>
+    <div className="p-6 animate-fade-in">
+      <h1 className="text-2xl font-bold mb-6">Indicadores</h1>
+      
+      {/* Filters Section */}
+      <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200 mb-6">
+        <div className="flex justify-between items-center mb-4">
+          <h2 className="text-lg font-semibold text-gray-700">Filtros</h2>
+          <button
+            onClick={handleReset}
+            className="px-4 py-2 text-sm text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-lg transition-colors"
+          >
+            Limpar Filtros
+          </button>
         </div>
-      )}
 
-      {status === 'failed' && (
-        <div className="bg-red-50 border-l-4 border-red-400 p-4">
-          <div className="flex">
-            <div className="flex-shrink-0">
-              <svg className="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
-                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
-              </svg>
-            </div>
-            <div className="ml-3">
-              <p className="text-sm text-red-700">{error}</p>
-            </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {/* Date Range */}
+          <div className="space-y-2">
+            <label className="block text-sm font-medium text-gray-700">Data Inicial</label>
+            <input
+              type="date"
+              value={filters.startDate || ''}
+              onChange={(e) => dispatch(setStartDate(e.target.value))}
+              className="w-full rounded-lg border-gray-300 shadow-sm focus:border-primary-500 focus:ring-1 focus:ring-primary-500"
+            />
           </div>
-        </div>
+
+          <div className="space-y-2">
+            <label className="block text-sm font-medium text-gray-700">Data Final</label>
+            <input
+              type="date"
+              value={filters.endDate || ''}
+              onChange={(e) => dispatch(setEndDate(e.target.value))}
+              className="w-full rounded-lg border-gray-300 shadow-sm focus:border-primary-500 focus:ring-1 focus:ring-primary-500"
+            />
+          </div>
+
+          {/* Sector Dropdown */}
+          <div className="space-y-2">
+            <label className="block text-sm font-medium text-gray-700">Setor</label>
+            <select
+              value={filters.sector}
+              onChange={(e) => dispatch(setSector(e.target.value))}
+              className="w-full rounded-lg border-gray-300 shadow-sm focus:border-primary-500 focus:ring-1 focus:ring-primary-500"
+            >
+              <option value="">Todos os Setores</option>
+              {MOCK_SECTORS.map((sector) => (
+                <option key={sector} value={sector}>{sector}</option>
+              ))}
+            </select>
+          </div>
+
+          {/* Professional Dropdown */}
+          <div className="space-y-2">
+            <label className="block text-sm font-medium text-gray-700">Profissional</label>
+            <select
+              value={filters.professional}
+              onChange={(e) => dispatch(setProfessional(e.target.value))}
+              className="w-full rounded-lg border-gray-300 shadow-sm focus:border-primary-500 focus:ring-1 focus:ring-primary-500"
+            >
+              <option value="">Todos os Profissionais</option>
+              {MOCK_PROFESSIONALS.map((professional) => (
+                <option key={professional} value={professional}>{professional}</option>
+              ))}
+            </select>
+          </div>
       )}
 
       {status === 'succeeded' && (
@@ -103,7 +181,15 @@ function Indicadores() {
             </table>
           </div>
         </div>
-      )}
+      </div>
+
+      {/* Charts Section */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <LineGraph 
+          data={mockData.monthlyResolved} 
+          title="Evolução Mensal de Inconsistências"
+        />
+      </div>
     </div>
   );
 }
