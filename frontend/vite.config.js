@@ -9,7 +9,8 @@ export default defineConfig({
     port: 5173, // Porta padrão do Vite
     proxy: {
       '/api': {
-        target: 'http://10.100.37.172:5000', // URL do backend
+        target: 'http://localhost:5000', 
+        // target: 'http://10.100.37.172:5000', // URL do backend
         changeOrigin: true,
         secure: false,
         // Remova o rewrite
@@ -21,7 +22,6 @@ export default defineConfig({
             console.log('Requisição:', req.method, req.url);
             // Adiciona headers úteis para debug
             proxyReq.setHeader('X-Forwarded-Proto', 'http');
-            proxyReq.setHeader('Origin', 'http://10.100.59.94:5173');
           });
         }
       },
