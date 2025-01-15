@@ -7,12 +7,157 @@ import { fetchInconsistencias, fetchTiposInconsistencias } from '../store/incons
 import { fetchSectors } from '../store/setoresSlice';
 
 function ReportarFalha() {
-  // ... keep existing code (states and Redux selectors)
+  const dispatch = useDispatch();
 
-  // ... keep existing code (useEffect hooks)
+  // -------------------------------------------
+  // Estados locais do componente
+  // -------------------------------------------
 
-  // ... keep existing code (handleAddInconsistencia, handleRemoveInconsistencia, handleSubmit functions)
+  // Armazena o ID do profissional selecionado
+  const [selectedProfissional, setSelectedProfissional] = useState('');
 
+  // Campo para inserir manualmente o código do prontuário
+  const [cdProntuario, setCdProntuario] = useState('');
+
+  // Tipo de formulário (ou tipo de documento) selecionado
+  const [selectedFormulario, setSelectedFormulario] = useState('');
+
+  // "Inconsistência selecionada" - usada antes de adicionarmos ao array
+  const [selectedInconsistencia, setSelectedInconsistencia] = useState('');
+
+  // Lista de inconsistências adicionadas (array de IDs)
+  const [listaInconsistencias, setListaInconsistencias] = useState([]);
+
+  // Setor selecionado para associar à falha
+  const [selectedSetor, setSelectedSetor] = useState('');
+
+  // Observações adicionais inseridas pelo usuário
+  const [observacoes, setObservacoes] = useState('');
+
+  // Controle de estado de carregamento (para desabilitar botão/enviar spinner)
+  const [loading, setLoading] = useState(false);
+
+  // Armazenar mensagem de erro, se ocorrer
+  const [error, setError] = useState(null);
+
+  // Adicionar novo state para hospitalId
+  const [hospitalId, setHospitalId] = useState(15); // ID fixo temporário
+
+  // -------------------------------------------
+  // Acessando dados do Redux
+  // -------------------------------------------
+  // Slices diferentes que contêm listas de dados (profissionais, formulários, etc.)
+  const profissionais = useSelector((state) => state.profissionais.list);
+  const formularios = useSelector((state) => state.formularios.list);
+  const inconsistenciasDisponiveis = useSelector((state) => state.inconsistencias.tiposInconsistencias);
+  const setores = useSelector((state) => state.setores.list);
+
+  const formulariosStatus = useSelector((state) => state.formularios.status);
+  const formulariosError = useSelector((state) => state.formularios.error);
+
+  // -------------------------------------------
+  // Efeito para carregar dados iniciais
+  // -------------------------------------------
+  // Assim que o componente monta, chamamos as thunks para popular Redux com dados
+  useEffect(() => {
+    dispatch(fetchProfissionais());
+    dispatch(fetchFormularios());
+    dispatch(fetchTiposInconsistencias()); // Adicionar esta chamada
+    dispatch(fetchSectors());
+  }, [dispatch]);
+
+  useEffect(() => {
+    console.log('Inconsistências disponíveis:', inconsistenciasDisponiveis);
+    console.log('Lista de inconsistências:', listaInconsistencias);
+    console.log('Formulários disponíveis:', formularios); // Adicione este log
+  }, [inconsistenciasDisponiveis, listaInconsistencias, formularios]);
+
+  useEffect(() => {
+    if (formulariosStatus === 'failed' && formulariosError) {
+      setError(formulariosError);
+    }
+  }, [formulariosStatus, formulariosError]);
+
+  /**
+   * handleAddInconsistencia
+   * Adiciona a inconsistência selecionada ao array 'listaInconsistencias', 
+   * desde que ela não esteja duplicada.
+   */
+  const handleAddInconsistencia = () => {
+    if (selectedInconsistencia && !listaInconsistencias.includes(selectedInconsistencia)) {
+      setListaInconsistencias([...listaInconsistencias, selectedInconsistencia]);
+      setSelectedInconsistencia('');
+    }
+  };
+
+  /**
+   * handleRemoveInconsistencia
+   * Remove uma inconsistência específica do array local.
+   * @param {number} id - ID da inconsistência a remover
+   */
+  const handleRemoveInconsistencia = (id) => {
+    setListaInconsistencias(listaInconsistencias.filter((inc) => inc !== id));
+  };
+
+  /**
+   * handleSubmit
+   * Principal função de envio do formulário. Faz validações mínimas,
+   * compõe o objeto (formData) no formato que a API espera e 
+   * chama a ação Redux que criará o Form + Falhas no backend.
+   */
+  const handleSubmit = async () => {
+    // Validar os dados do formulário
+    if (!cdProntuario || !selectedFormulario || !selectedProfissional || !hospitalId || !selectedSetor) {
+      alert('Por favor, preencha todos os campos obrigatórios.');
+      return;
+    }
+
+    setLoading(true);
+    setError(null);
+
+    const failureData = {
+      prontuarioCode: cdProntuario,
+      formularioId: selectedFormulario,
+      formularioDate: new Date(),
+      professionalId: selectedProfissional,
+      hospitalId: hospitalId,
+      sectorId: selectedSetor,
+      observacoes,
+      tpInconsistenciaIds: listaInconsistencias,
+      createUser: selectedProfissional
+    };
+
+    try {
+      await dispatch(createFailure(failureData)).unwrap();
+
+      // Resetar formulário após sucesso
+      setCdProntuario('');
+      setSelectedFormulario('');
+      setSelectedProfissional('');
+      setHospitalId('');
+      setSelectedSetor('');
+      setObservacoes('');
+      setListaInconsistencias([]);
+
+      alert('Falha reportada com sucesso!');
+    } catch (error) {
+      console.error('Erro ao reportar falha:', error);
+      setError('Ocorreu um erro ao reportar a falha. Tente novamente.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Função para encontrar a inconsistência no array
+  const encontrarInconsistencia = (id) => {
+    return inconsistenciasDisponiveis.find(inc =>
+      String(inc.id) === String(id)
+    );
+  };
+
+  // -------------------------------------------
+  // Renderização do JSX
+  // -------------------------------------------
   return (
     <div className="max-w-4xl mx-auto py-8 px-4 sm:px-6 lg:px-8 animate-fade-in">
       <div className="mb-8">
