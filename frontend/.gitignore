@@ -20,3 +20,9 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+# Arquivos Docker
+.docker
+docker-compose.override.yml
+# Arquivos temporários
+arvore.txt
+ROOT/package-lock.json
