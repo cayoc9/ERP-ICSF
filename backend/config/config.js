@@ -4,7 +4,7 @@ require('dotenv').config(); // Carrega as variáveis de ambiente do arquivo .env
 module.exports = {
   development: {
     username: process.env.DB_USER_DEV || 'user_dev',
-    password: process.env.DB_PASSWORD_DEV || 'h9856ju985jh596',
+    password: process.env.DB_PASSWORD_DEV || '468215973',
     database: process.env.DB_NAME_DEV || 'erp_hospitalar_dev',
     host: process.env.DB_HOST_DEV || '10.100.65.91',
     dialect: 'postgres',

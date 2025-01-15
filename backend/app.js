@@ -35,6 +35,7 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs));
 // Middlewares
 app.use(cors({
   origin: [
+    'http://127.0.0.1:5173',
     'http://localhost:5173',
     'http://10.100.59.94:5173', 
     'https://plataformas.icsf.com.br',
