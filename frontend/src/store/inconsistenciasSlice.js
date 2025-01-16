@@ -1,16 +1,7 @@
-/**
- * Slice para gerenciar tanto tipos de inconsistências quanto falhas reportadas.
- * - fetchInconsistencias() carrega falhas via GET /failures
- * - fetchTiposInconsistencias() carrega tipos via GET /tp-inconsistencies
- * - addInconsistencia() cria via POST /tp-inconsistencies
- * - updateInconsistencia() atualiza via PUT /tp-inconsistencies/:id
- * - removeInconsistencia() remove via DELETE /tp-inconsistencies/:id
- */
-
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import api from '../services/api'; // axios configurado com baseURL
+import api from '../services/api';
 
-// Carrega a lista de falhas para exibição na página de indicadores
+// Fetch inconsistencies list
 export const fetchInconsistencias = createAsyncThunk(
   'inconsistencias/fetchInconsistencias',
   async () => {
@@ -19,7 +10,7 @@ export const fetchInconsistencias = createAsyncThunk(
   }
 );
 
-// Nova action para carregar tipos de inconsistências
+// Fetch inconsistency types
 export const fetchTiposInconsistencias = createAsyncThunk(
   'inconsistencias/fetchTiposInconsistencias',
   async () => {
@@ -28,70 +19,103 @@ export const fetchTiposInconsistencias = createAsyncThunk(
   }
 );
 
-// Cria (POST) uma "inconsistência"
+// Create new inconsistency
 export const addInconsistencia = createAsyncThunk(
   'inconsistencias/addInconsistencia',
   async (novaInconsistencia) => {
-    // POST /api/tp-inconsistencies
     const response = await api.post('/tp-inconsistencies', novaInconsistencia);
     return response.data;
   }
 );
 
-// Atualiza (PUT) uma "inconsistência"
+// Update inconsistency
 export const updateInconsistencia = createAsyncThunk(
   'inconsistencias/updateInconsistencia',
   async ({ id, data }) => {
-    // PUT /api/tp-inconsistencies/:id
     const response = await api.put(`/tp-inconsistencies/${id}`, data);
     return response.data;
   }
 );
 
-// Remove (DELETE) uma "inconsistência"
+// Remove inconsistency
 export const removeInconsistencia = createAsyncThunk(
   'inconsistencias/removeInconsistencia',
   async (id) => {
-    // DELETE /api/tp-inconsistencies/:id
     await api.delete(`/tp-inconsistencies/${id}`);
     return id;
   }
 );
 
+// Resolve inconsistencies
+export const resolveInconsistencias = createAsyncThunk(
+  'inconsistencias/resolveInconsistencias',
+  async (ids) => {
+    const response = await api.post('/failures/resolve', { ids });
+    return response.data;
+  }
+);
+
+// Calculate time open
+const calculateTimeOpen = (createDate) => {
+  const created = new Date(createDate);
+  const now = new Date();
+  const diffTime = Math.abs(now - created);
+  const days = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+  const hours = Math.floor((diffTime % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+  return `${days}d:${hours}h`;
+};
+
 const inconsistenciasSlice = createSlice({
   name: 'inconsistencias',
   initialState: {
-    list: [], // Lista de falhas para Indicadores.jsx
-    tiposInconsistencias: [], // Nova lista para tipos de inconsistências
+    list: [],
+    tiposInconsistencias: [],
+    selectedIds: [], // For bulk operations
     status: 'idle',
     tiposStatus: 'idle',
     error: null,
+    page: 1,
+    perPage: 10,
+    totalItems: 0
   },
-  reducers: {},
+  reducers: {
+    toggleSelection: (state, action) => {
+      const id = action.payload;
+      if (state.selectedIds.includes(id)) {
+        state.selectedIds = state.selectedIds.filter(i => i !== id);
+      } else {
+        state.selectedIds.push(id);
+      }
+    },
+    clearSelection: (state) => {
+      state.selectedIds = [];
+    },
+    setPage: (state, action) => {
+      state.page = action.payload;
+    }
+  },
   extraReducers: (builder) => {
     builder
-      // Carregar Falhas (para Indicadores.jsx)
+      // Fetch inconsistencies
       .addCase(fetchInconsistencias.pending, (state) => {
         state.status = 'loading';
       })
       .addCase(fetchInconsistencias.fulfilled, (state, action) => {
         state.status = 'succeeded';
         state.list = action.payload.map(item => ({
-          id: item.id,
-          prontuarioCode: item.prontuarioCode,
-          status: item.status,
-          hospitalName: item.hospital?.name || 'N/A', // Alterado
-          sectorName: item.sector?.name || 'N/A',
-          createDate: item.createDate,
-          updateDate: item.updateDate
+          ...item,
+          timeOpen: calculateTimeOpen(item.createDate),
+          hospitalName: item.hospital?.name || 'N/A',
+          sectorName: item.sector?.name || 'N/A'
         }));
+        state.totalItems = action.payload.length;
       })
       .addCase(fetchInconsistencias.rejected, (state, action) => {
         state.status = 'failed';
         state.error = action.error.message;
       })
 
-      // Carregar Tipos de Inconsistências (para ReportarFalha.jsx)
+      // Fetch types
       .addCase(fetchTiposInconsistencias.pending, (state) => {
         state.tiposStatus = 'loading';
       })
@@ -104,24 +128,43 @@ const inconsistenciasSlice = createSlice({
         state.error = action.error.message;
       })
 
-      // Adicionar Inconsistência
+      // Add
       .addCase(addInconsistencia.fulfilled, (state, action) => {
-        state.list.push(action.payload);
+        state.list.push({
+          ...action.payload,
+          timeOpen: '0d:0h'
+        });
       })
 
-      // Atualizar Inconsistência
+      // Update
       .addCase(updateInconsistencia.fulfilled, (state, action) => {
-        const index = state.list.findIndex((inc) => inc.id === action.payload.id);
+        const index = state.list.findIndex(inc => inc.id === action.payload.id);
         if (index !== -1) {
-          state.list[index] = action.payload;
+          state.list[index] = {
+            ...action.payload,
+            timeOpen: calculateTimeOpen(action.payload.createDate)
+          };
         }
       })
 
-      // Remover Inconsistência
+      // Remove
       .addCase(removeInconsistencia.fulfilled, (state, action) => {
-        state.list = state.list.filter((inc) => inc.id !== action.payload);
+        state.list = state.list.filter(inc => inc.id !== action.payload);
+        state.selectedIds = state.selectedIds.filter(id => id !== action.payload);
+      })
+
+      // Resolve
+      .addCase(resolveInconsistencias.fulfilled, (state, action) => {
+        const resolvedIds = action.payload.map(item => item.id);
+        state.list = state.list.map(inc => 
+          resolvedIds.includes(inc.id) 
+            ? { ...inc, status: 'resolved', resolvedDate: new Date().toISOString() }
+            : inc
+        );
+        state.selectedIds = state.selectedIds.filter(id => !resolvedIds.includes(id));
       });
   },
 });
 
+export const { toggleSelection, clearSelection, setPage } = inconsistenciasSlice.actions;
 export default inconsistenciasSlice.reducer;
