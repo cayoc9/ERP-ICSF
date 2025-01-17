@@ -32,11 +32,28 @@ const options = {
 const specs = swaggerJsdoc(options);
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs));
 
+// Error Handler
+const { errorHandler } = require('./utils/errorHandler');
+
 // Middlewares
-app.use(cors());
+app.use(cors({
+  origin: [
+    'http://localhost:5173',
+    'http://10.100.59.94:5173', 
+    'https://plataformas.icsf.com.br',
+    'http://plataformas.icsf.com.br'
+  ],
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
 app.use(express.json());
 
 // Adicionar middleware de log
+app.use((req, res, next) => {
+  console.log(`${new Date().toISOString()} - ${req.method} ${req.url}`);
+  next();
+});
+
 app.use('/api/forms/with-failures', (req, res, next) => {
   if (req.method === 'POST') {
     console.log('Payload recebido em /forms/with-failures:', req.body);
@@ -54,6 +71,9 @@ app.use('/api/indicators', indicatorRoutes);
 app.use('/api/hospitals', hospitalRoutes);
 app.use('/api/hospital-groups', hospitalGroupRoutes);
 
+
+// Global error handling middleware
+app.use(errorHandler);
 const PORT = process.env.PORT || 5000;
 
 /**
@@ -68,8 +88,8 @@ sequelize.authenticate()
   })
   .then(() => {
     console.log('Models synchronized with the database.');
-    app.listen(PORT, () => {
-      console.log(`Server running on port ${PORT}.`);
+    app.listen(PORT, '0.0.0.0', () => {
+      console.log(`Server running on port ${PORT}`);
     });
   })
   .catch(err => {

@@ -1,24 +1,27 @@
 import axios from 'axios';
 
 const api = axios.create({
-  // Remove a verificação de VITE_API_URL e usa apenas o proxy do Vite
-  baseURL: 'http://localhost:5000/api',
-  timeout: 10000,
+  baseURL: '/api',
+  timeout: parseInt(import.meta.env.VITE_API_TIMEOUT),
   headers: {
     'Content-Type': 'application/json',
   }
 });
 
-// Interceptor para logs
+// Interceptors para debug
 api.interceptors.request.use(request => {
-  console.log('Request:', request);
+  if (import.meta.env.DEV) {
+    console.log('Request:', request);
+  }
   return request;
 });
 
 api.interceptors.response.use(
   response => response,
   error => {
-    console.error('API Error:', error.response);
+    if (import.meta.env.DEV) {
+      console.error('API Error:', error.response);
+    }
     return Promise.reject(error);
   }
 );
