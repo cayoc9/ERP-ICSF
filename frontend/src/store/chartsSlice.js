@@ -58,6 +58,15 @@ const chartsSlice = createSlice({
       state.loading = false;
       state.error = null;
     }
+  },
+  extraReducers: (builder) => {
+    builder
+      .addCase(fetchChartData.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message;
+        // Limpar dados antigos em caso de erro
+        state.data = initialState.data;
+      });
   }
 });
 
