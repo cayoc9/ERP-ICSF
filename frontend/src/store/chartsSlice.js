@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import api from '../../services/api';
+import api from '../services/api';
 
 const initialState = {
   loading: false,
@@ -18,14 +18,22 @@ const initialState = {
 // Thunks
 export const fetchChartData = createAsyncThunk(
   'charts/fetchChartData',
-  async (filters = {}) => {
+  async (filters = {}, { rejectWithValue }) => {
     try {
-      const response = await api.get('/api/statistics', { 
-        params: filters 
-      });
+      const params = {
+        startDate: filters.dateRange?.start,
+        endDate: filters.dateRange?.end,
+        ...filters
+      };
+      const response = await api.get('/statistics', { params });
       return response.data;
     } catch (error) {
-      throw error.response?.data?.message || 'Erro ao carregar dados dos gráficos';
+      // If API fails, use mock data in development
+      if (import.meta.env.DEV) {
+        const { getMockedData } = await import('../mocks/chartData');
+        return await getMockedData();
+      }
+      return rejectWithValue(error.response?.data?.message || 'Erro ao carregar dados dos gráficos');
     }
   }
 );
@@ -82,7 +90,7 @@ const chartsSlice = createSlice({
   }
 });
 
-// Actions extraídas do reducer:
+// Actions
 export const {
   setLoading,
   setError,
@@ -91,29 +99,31 @@ export const {
   resetCharts
 } = chartsSlice.actions;
 
-// Selectors:
+// Selectors
 export const selectChartLoading = (state) => state.charts.loading;
 export const selectChartError = (state) => state.charts.error;
-export const selectChartData =
-  (chartType) => (state) => state.charts.data[chartType];
+export const selectChartData = (chartType) => (state) => state.charts.data[chartType];
 
-export const selectInconsistencyTypes = (state) =>
-  state.charts.data.inconsistencyTypes;
-export const selectDocumentTypes = (state) =>
-  state.charts.data.documentTypes;
-export const selectSectorDistribution = (state) =>
-  state.charts.data.sectorDistribution;
-export const selectProfessionalDistribution = (state) =>
-  state.charts.data.professionalDistribution;
-export const selectRoleDistribution = (state) =>
-  state.charts.data.roleDistribution;
-export const selectResolutionTrend = (state) =>
-  state.charts.data.resolutionTrend;
-export const selectResolutionRate = (state) =>
-  state.charts.data.resolutionRate;
+export const {
+  selectInconsistencyTypes,
+  selectDocumentTypes,
+  selectSectorDistribution,
+  selectProfessionalDistribution,
+  selectRoleDistribution,
+  selectResolutionTrend,
+  selectResolutionRate
+} = {
+  selectInconsistencyTypes: (state) => state.charts.data.inconsistencyTypes,
+  selectDocumentTypes: (state) => state.charts.data.documentTypes,
+  selectSectorDistribution: (state) => state.charts.data.sectorDistribution,
+  selectProfessionalDistribution: (state) => state.charts.data.professionalDistribution,
+  selectRoleDistribution: (state) => state.charts.data.roleDistribution,
+  selectResolutionTrend: (state) => state.charts.data.resolutionTrend,
+  selectResolutionRate: (state) => state.charts.data.resolutionRate
+};
 
-// Reducer padrão:
+// Exporte o reducer como default
 export default chartsSlice.reducer;
 
-// Exporte thunks e demais funcionalidades (sem repetir as actions):
-export { fetchChartData, refreshChartData };
+// Exporte o thunk refreshChartData
+export { refreshChartData };
