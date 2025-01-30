@@ -1,0 +1,62 @@
+# Arquivos de sistema
+.DS_Store
+Thumbs.db
+
+# Dependências
+/node_modules
+/vendor
+package-lock.json
+composer.lock
+
+# Arquivos de ambiente
+.env
+.env.local
+.env.*.local
+
+# Arquivos de build/produção
+/dist
+/build
+/public/hot
+/public/storage
+
+# Arquivos de IDE/editores
+.idea/
+.vscode/
+*.sublime-project
+*.sublime-workspace
+
+# Logs e databases
+*.log
+*.sqlite
+*.sqlite3
+/storage/*.key
+
+# Arquivos de cache
+.cache/
+.temp/
+.tmp/
+*.cache
+
+# Arquivos de teste
+/coverage
+.phpunit.result.cache
+
+# Outros
+*.bak
+*.swp
+*.swo
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+
+# Arquivos de Temporários
+.tmp/
+.temp/
+.cache/
+.vscode/
+.idea/
+.DS_Store
+Mantis_template/
+docs/
+
