@@ -58,5 +58,5 @@ composer.lock
 .idea/
 .DS_Store
 Mantis_template/
-docs/
+/docs/
 
